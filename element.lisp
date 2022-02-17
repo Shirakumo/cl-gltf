@@ -42,8 +42,41 @@
                          (when accessor `(:accessor ,accessor)))
                  `(:accessor ,slot)))))
 
+(defvar *describe-indent* 0)
+
+(defun describe-slot (name value maxlength stream)
+  (flet ((write-slot (name)
+           (format stream "~va- ~va " (* 2 *describe-indent*) "" maxlength name)))
+    (typecase value
+      (null)
+      ((and array (not string))
+       (write-slot name)
+       (let ((*describe-indent* (1+ *describe-indent*)))
+         (cond ((= 0 (length value))
+                (terpri stream))
+               ((typep (aref value 0) 'gltf-element)
+                (terpri stream)
+                (loop for element across value do (describe-object element stream)))
+               (T
+                (format stream "~a~%" value)))))
+      (hash-table
+       (write-slot name) (terpri stream)
+       (loop for k being the hash-keys of value
+             for v being the hash-values of value
+             do (let ((*describe-indent* (1+ *describe-indent*)))
+                  (describe-slot k v maxlength stream))))
+      (gltf-element
+       (write-slot name) (terpri stream)
+       (let ((*describe-indent* (1+ *describe-indent*)))
+         (describe-object value stream)))
+      (T
+       (write-slot name)
+       (format stream "~s~%" value)))))
+
 (defmacro define-element (name superclasses slots &rest options)
-  (let ((slots (loop for slot in slots collect (apply #'normalize-slotdef (if (listp slot) slot (list slot))))))
+  (let* ((slots (loop for slot in slots collect (apply #'normalize-slotdef (if (listp slot) slot (list slot)))))
+         (maxlength (loop for slot in slots maximize (length (string (first slot)))))
+         (none (gensym "NONE")))
     `(progn
        (defclass ,name ,superclasses
          ,(loop for (slot . args) in slots
@@ -51,14 +84,24 @@
          ,@options)
 
        (defmethod initargs append ((type ,name) json gltf)
-         (list ,@(loop for (slot . args) in slots
-                       when (getf args :name)
-                       collect (getf args :initarg)
-                       when (getf args :name)
-                       collect (destructuring-bind (&key ref parse name &allow-other-keys) args
-                                 (cond (ref
-                                        `(resolve (gethash ,name json) ',ref gltf))
-                                       (parse
-                                        `(parse-from (gethash ,name json) ',parse gltf))
-                                       (T
-                                        `(gethash ,name json))))))))))
+         (let ((result ()))
+           ,@(loop for (slot . args) in slots
+                   when (getf args :name)
+                   collect `(let ((value (gethash ,(getf args :name) json ',none)))
+                              (unless (eq value ',none)
+                                (push ,(destructuring-bind (&key ref parse &allow-other-keys) args
+                                         (cond (ref
+                                                `(resolve value ',ref gltf))
+                                               (parse
+                                                `(parse-from value ',parse gltf))
+                                               (T
+                                                `value)))
+                                      result)
+                                (push ,(getf args :initarg) result))))
+           result))
+
+       (defmethod describe-object ((type ,name) stream)
+         (format stream "~va~a~%" (* 2 *describe-indent*) "" (type-of type))
+         ,@(loop for (name . args) in slots
+                 when (getf args :name)
+                 collect `(describe-slot ',name (slot-value type ',name) ,maxlength stream))))))

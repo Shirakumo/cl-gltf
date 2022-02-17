@@ -144,8 +144,8 @@
 (define-element accessor (sequences:sequence named-element)
   ((buffer-view :ref buffer-views)
    (byte-offset :initform 0)
-   (component-type :name "componentType")
-   (element-type :name "type")
+   (component-type :name "componentType" :initform :float :parse element-type)
+   (element-type :name "type" :parse element-type)
    (size :name "count" :accessor size :reader sequences:length)
    (normalized :initform NIL)
    (maximum :name "max")
@@ -166,10 +166,10 @@
     (setf (slot-value accessor 'element-writer) (construct-element-writer (element-type accessor) (component-type accessor)))))
 
 (defmethod sequences:elt ((accessor accessor) i)
-  (funcall (element-reader accessor) (cffi:inc-pointer (start accessor) (* byte-stride i))))
+  (funcall (element-reader accessor) (cffi:inc-pointer (start accessor) (* (byte-stride accessor) i))))
 
 (defmethod (setf sequences:elt) (value (accessor accessor) i)
-  (funcall (element-writer accessor) value (cffi:inc-pointer (start accessor) (* byte-stride i))))
+  (funcall (element-writer accessor) value (cffi:inc-pointer (start accessor) (* (byte-stride accessor) i))))
 
 (define-element sparse-accessor (accessor)
   (index-count

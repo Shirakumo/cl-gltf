@@ -18,6 +18,9 @@
 
 (defgeneric parse-from (json type gltf))
 
+(defmethod parse-from ((null null) type gltf)
+  null)
+
 (defmethod parse-from ((array vector) type gltf)
   (map 'vector (lambda (json) (parse-from json type gltf)) array))
 
@@ -45,7 +48,13 @@
     (33648 :mirrored-repeat)
     (10497 :repeat)))
 
-(defmethod parse-from (json (type (eql 'keyword)) gltf)
+(defmethod parse-from (json (type (eql 'element-type)) gltf)
+  (normalize-type json))
+
+(defmethod parse-from ((json string) (type (eql 'element-type)) gltf)
+  (normalize-type json))
+
+(defmethod parse-from ((json string) (type (eql 'keyword)) gltf)
   (intern (string-upcase json) "KEYWORD"))
 
 (defmethod parse-from (json (type (eql 'mesh-attributes)) gltf)
@@ -65,21 +74,24 @@
     (val 'buffer-views "bufferViews" 'buffer-view)
     (val 'accessors "accessors" 'accessor)
     (val 'asset "asset" 'asset)
-    (val 'meshes "meshes" 'mesh)
     (val 'images "images" 'image)
     (val 'samplers "samplers" 'sampler)
     (val 'textures "textures" 'texture)
     (val 'materials "materials" 'material)
-    (val 'skins "skins" 'skin)
+    (val 'meshes "meshes" 'mesh)
     (val 'nodes "nodes" 'node)
+    (val 'skins "skins" 'skin)
     (val 'animations "animations" 'animation)
     (val 'scenes "scenes" 'scene)
+    ;; Tie up crap.
     (loop for node across (nodes gltf)
           for children = (children node)
           do (loop for i from 0 below (length children)
-                   for child = (aref (nodes gltf) i)
+                   for child = (aref (nodes gltf) (aref children i))
                    do (setf (parent child) node)
-                      (setf (aref children i) child)))
+                      (setf (aref children i) child))
+             (when (skin node)
+               (resolve (skin node) 'skins gltf)))
     type))
 
 (defun parse (file)

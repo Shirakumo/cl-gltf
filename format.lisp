@@ -22,25 +22,26 @@
 
 (define-element gltf (gltf-element)
   (uri
-   (buffers :parse buffer)
-   (buffer-views :parse buffer-view)
-   (accessors :parse accessor)
+   (buffers :initform #() :parse buffer)
+   (buffer-views :initform #() :parse buffer-view)
+   (accessors :initform #() :parse accessor)
    (asset :parse asset)
-   (cameras :parse camera)
-   (meshes :parse mesh)
-   (images :parse image)
-   (samplers :parse sampler)
-   (textures :parse texture)
-   (materials :parse material)
-   (skins :parse skin)
-   (nodes :parse node)
-   (animations :parse animation)
-   (scenes :parse scene)))
+   (cameras :initform #() :parse camera)
+   (meshes :initform #() :parse mesh)
+   (images :initform #() :parse image)
+   (samplers :initform #() :parse sampler)
+   (textures :initform #() :parse texture)
+   (materials :initform #() :parse material)
+   (skins :initform #() :parse skin)
+   (nodes :initform #() :parse node)
+   (animations :initform #() :parse animation)
+   (scenes :initform #() :parse scene)))
 
 (defmethod initialize-instance :after ((gltf gltf) &key)
   (setf (slot-value gltf 'gltf) gltf))
 
 (defmethod close ((gltf gltf) &key abort)
+  (declare (ignore abort))
   (loop for buffer across (buffers gltf)
         do (close buffer)))
 
@@ -51,13 +52,13 @@
    min-version))
 
 (define-element scene (named-element)
-  ((nodes :ref nodes)))
+  ((nodes :initform #() :ref nodes)))
 
 (define-element node (named-element)
   ((camera :ref cameras)
-   (parent :name null)
+   (parent :name null :accessor parent)
    (children :initform #())
-   (skin :ref skins)
+   skin
    (mesh :ref meshes)
    matrix
    rotation
@@ -81,12 +82,12 @@
    znear))
 
 (define-element mesh (named-element)
-  ((primitives :parse mesh-primitive)
+  ((primitives :initform #() :parse mesh-primitive)
    weights))
 
 (define-element mesh-primitive (gltf-element)
-  ((attributes :parse mesh-attributes)
-   (indices :ref accessors)
+  ((attributes :initform #() :parse mesh-attributes)
+   (indices :initform #() :ref accessors)
    (material :ref materials)
    (mode :initform 4)
    targets))
@@ -102,8 +103,8 @@
    (double-sided-p :initform NIL :name "doubleSided")))
 
 (define-element animation (named-element)
-  ((channels :parse animation-channel)
-   (samplers :parse animation-sampler)))
+  ((channels :initform #() :parse animation-channel)
+   (samplers :initform #() :parse animation-sampler)))
 
 (define-element animation-channel (gltf-element)
   (sampler
@@ -131,7 +132,7 @@
 (define-element skin (named-element)
   ((inverse-bind-matrices :ref accessors)
    (skeleton :ref nodes)
-   (joints :ref nodes)))
+   (joints :initform #() :ref nodes)))
 
 (define-element texture (named-element)
   ((sampler :ref samplers)
