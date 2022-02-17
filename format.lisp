@@ -55,11 +55,11 @@
 
 (define-element node (named-element)
   ((camera :ref cameras)
-   parent
-   (children :ref nodes)
+   (parent :name null)
+   (children :initform #())
    (skin :ref skins)
-   matrix
    (mesh :ref meshes)
+   matrix
    rotation
    scale
    translation
@@ -85,21 +85,21 @@
    weights))
 
 (define-element mesh-primitive (gltf-element)
-  (attributes
+  ((attributes :parse mesh-attributes)
    (indices :ref accessors)
    (material :ref materials)
-   mode
+   (mode :initform 4)
    targets))
 
 (define-element material (named-element)
   ((pbr :parse pbr :name "pbrMetallicRoughness")
-   (normal :parse texture-info)
-   (occlusion :parse texture-info)
-   (emission :parse texture-info)
-   emission-factor
-   (alpha-mode :parse alpha-mode)
-   alpha-cutoff
-   double-sided-p))
+   (normal-texture :parse texture-info)
+   (occlusion-texture :parse texture-info)
+   (emissive-texture :parse texture-info)
+   (emissive-factor :initform #(0.0 0.0 0.0))
+   (alpha-mode :initform :opaque :parse keyword)
+   (alpha-cutoff :initform 0.5)
+   (double-sided-p :initform NIL :name "doubleSided")))
 
 (define-element animation (named-element)
   ((channels :parse animation-channel)
@@ -111,22 +111,22 @@
 
 (define-element animation-channel-target (gltf-element)
   ((node :ref nodes)
-   path))
+   (path :parse keyword)))
 
 (define-element animation-sampler (gltf-element)
   ((input :ref accessors)
    (output :ref accessors)
-   (interpolation :parse interpolation)))
+   (interpolation :parse keyword)))
 
 (define-element image (uri-element named-element)
   (mime-type
-   (buffer-view :parse buffer-views)))
+   (buffer-view :ref buffer-views)))
 
 (define-element sampler (named-element)
-  (mag-filter
-   min-filter
-   wrap-s
-   wrap-t))
+  ((mag-filter :initform :linear :parse filter)
+   (min-filter :initform :linear :parse filter)
+   (wrap-s :initform :repeat :parse wrapping)
+   (wrap-t :initform :repeat :parse wrapping)))
 
 (define-element skin (named-element)
   ((inverse-bind-matrices :ref accessors)
@@ -138,14 +138,14 @@
    (source :ref images)))
 
 (define-element texture-info (gltf-element)
-  ((texture :ref textures)
-   tex-coord
-   scale
-   strength))
+  ((texture :name "index" :ref textures)
+   (tex-coord :initform 0)
+   (scale :initform 1.0)
+   (strength :initform 1.0)))
 
 (define-element pbr (gltf-element)
   ((albedo :parse texture-info :name "baseColorTexture")
-   (albedo-factor :name "baseColorFactor")
-   metallic-factor
-   roughness-factor
+   (albedo-factor :initform #(1.0 1.0 1.0 1.0) :name "baseColorFactor")
+   (metallic-factor :initform 1.0)
+   (roughness-factor :initform 1.0)
    (matallic-roughness :parse texture-info :name "metallicRoughnessTexture")))

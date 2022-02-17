@@ -28,7 +28,33 @@
   (parse-from json (c2mop:class-prototype (c2mop:ensure-finalized (find-class type))) gltf))
 
 (defmethod parse-from (json (type gltf-element) gltf)
-  (apply #'make-instance (type-of type) :gltf gltf (print (initargs type json gltf))))
+  (apply #'make-instance (type-of type) :gltf gltf (initargs type json gltf)))
+
+(defmethod parse-from (json (type (eql 'filter)) gltf)
+  (ecase json
+    (9728 :nearest)
+    (9729 :linear)
+    (9984 :nearest-mipmap-nearest)
+    (9985 :linear-mipmap-nearest)
+    (9986 :nearest-mipmap-linear)
+    (9987 :linear-mipmap-linear)))
+
+(defmethod parse-from (json (type (eql 'wrapping)) gltf)
+  (ecase json
+    (33071 :clamp-to-edge)
+    (33648 :mirrored-repeat)
+    (10497 :repeat)))
+
+(defmethod parse-from (json (type (eql 'keyword)) gltf)
+  (intern (string-upcase json) "KEYWORD"))
+
+(defmethod parse-from (json (type (eql 'mesh-attributes)) gltf)
+  (let ((table (make-hash-table :test 'eql)))
+    (maphash (lambda (k v)
+               (setf (gethash (intern (string-upcase k) "KEYWORD") table)
+                     (resolve v 'accessors gltf)))
+             json)
+    table))
 
 (defmethod parse-from (json (type gltf) gltf)
   (flet ((val (slot source type)
@@ -48,6 +74,12 @@
     (val 'nodes "nodes" 'node)
     (val 'animations "animations" 'animation)
     (val 'scenes "scenes" 'scene)
+    (loop for node across (nodes gltf)
+          for children = (children node)
+          do (loop for i from 0 below (length children)
+                   for child = (aref (nodes gltf) i)
+                   do (setf (parent child) node)
+                      (setf (aref children i) child)))
     type))
 
 (defun parse (file)
