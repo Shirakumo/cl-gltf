@@ -7,6 +7,6 @@
 (defpackage #:org.shirakumo.fraf.gltf
   (:use #:cl)
   (:local-nicknames
-   (#:jzon #:com.inuoe.jzon)
-   (#:mmap #:org.shirakumo.fraf.trial.mmap))
+   (#:mmap #:org.shirakumo.fraf.trial.mmap)
+   (#:sequences #:org.shirakumo.trivial-extensible-sequences))
   (:export))

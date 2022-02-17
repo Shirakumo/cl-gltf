@@ -15,10 +15,14 @@
   :source-control (:git "https://github.com/shirakumo/cl-gltf.git")
   :serial T
   :components ((:file "package")
-               (:file "accessor")
+               (:file "element")
                (:file "format")
+               (:file "accessor")
+               (:file "parser")
                (:file "documentation"))
   :depends-on (:documentation-utils
+               :trivial-extensible-sequences
                :mmap
-               :jzon)
+               :shasht
+               :cffi)
   :in-order-to ((asdf:test-op (asdf:test-op :cl-gltf-test))))
