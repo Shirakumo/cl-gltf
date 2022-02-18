@@ -94,11 +94,51 @@
                (resolve (skin node) 'skins gltf)))
     type))
 
+(defun parse-glb-stream (stream)
+  (assert (= (nibbles:read-ub32/le stream) #x46546C67))
+  (assert (= (nibbles:read-ub32/le stream) 2))
+  (nibbles:read-ub32/le stream)
+  (let ((skip (if (typep stream 'file-stream)
+                  (lambda (i) (file-position stream (+ (file-position stream) i)))
+                  (lambda (i) (loop repeat i do (read-byte stream)))))
+        (gltf (make-instance 'gltf :uri NIL)))
+    (loop for length = (nibbles:read-ub32/le stream)
+          for type = (nibbles:read-ub32/le stream)
+          do (case type
+               (#x4E4F534A                ; JSON
+                (parse-from (shasht:read-json stream T NIL T) gltf gltf))
+               (#x004E4942                ; BIN
+                (let ((buffer (static-vectors:make-static-vector length)))
+                  (read-sequence buffer stream)
+                  (change-class (svref (buffers gltf) 0) 'static-buffer :buffer buffer)))
+               (T
+                (funcall skip length))))))
+
 (defun parse (file)
-  (with-open-file (stream file)
-    (let ((json (shasht:read-json stream))
-          (gltf (make-instance 'gltf :uri file)))
-      (parse-from json gltf gltf))))
+  (etypecase file
+    (pathname
+     (cond ((string-equal "glb" (pathname-type file))
+            (with-open-file (stream file :element-type '(unsigned-byte 8))
+              (parse stream)))
+           (T
+            (with-open-file (stream file :element-type 'character)
+              (parse stream)))))
+    (string
+     (with-input-from-string (stream file)
+       (parse stream)))
+    (cffi:foreign-pointer
+     (error "Implement GLB parsing from memory"))
+    ((vector (unsigned-byte 8))
+     (error "Implement GLB parsing from memory"))
+    (stream
+     (cond ((eql '(unsigned-byte 8) (stream-element-type file))
+            (parse-glb-stream file))
+           ((eql 'character (stream-element-type file))
+            (let ((json (shasht:read-json file))
+                  (gltf (make-instance 'gltf :uri file)))
+              (parse-from json gltf gltf)))
+           (T
+            (error "Can't read from a stream with element type other than CHARACTER or (UNSIGNED-BYTE 8)."))))))
 
 (defmacro with-gltf ((gltf file) &body body)
   `(let ((,gltf (parse ,file)))

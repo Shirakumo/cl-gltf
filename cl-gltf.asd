@@ -25,5 +25,7 @@
                :mmap
                :shasht
                :cffi
-               :qbase64)
+               :qbase64
+               :nibbles
+               :static-vectors)
   :in-order-to ((asdf:test-op (asdf:test-op :cl-gltf-test))))

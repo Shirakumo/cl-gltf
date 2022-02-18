@@ -108,8 +108,12 @@
   (cond ((and (< (length "data:") (length (uri buffer)))
               (string= "data:" (uri buffer) :end2 (length "data:")))
          (change-class buffer 'uri-buffer))
+        ((null (uri (gltf buffer))))
         (T
          (change-class buffer 'mmap-buffer))))
+
+(defmethod close ((buffer buffer) &key abort)
+  (declare (ignore abort)))
 
 (defmethod sequences:elt ((buffer buffer) i)
   (cffi:mem-aref (start buffer) :uint8 i))
@@ -117,39 +121,32 @@
 (defmethod (setf sequences:elt) (value (buffer buffer) i)
   (setf (cffi:mem-aref (start buffer) :uint8 i) value))
 
-(define-element uri-buffer (buffer)
+(define-element static-buffer (buffer)
+  ((buffer :initarg :buffer :name null :reader buffer)))
+
+(defmethod sequences:elt ((buffer static-buffer) i)
+  (aref (buffer buffer) i))
+
+(defmethod (setf sequences:elt) (value (buffer static-buffer) i)
+  (setf (aref (buffer buffer) i) value))
+
+(defmethod close ((buffer uri-buffer) &key abort)
+  (declare (ignore abort))
+  (when (slot-boundp buffer 'buffer)
+    (static-vectors:free-static-vector (buffer buffer))
+    (slot-makunbound buffer 'start)
+    (slot-makunbound buffer 'buffer)))
+
+(define-element uri-buffer (static-buffer)
   ())
 
 (defmethod initialize-instance :after ((buffer uri-buffer) &key)
   (let* ((string (uri buffer))
          (start (1+ (position #\, string)))
-         (memory (cffi:foreign-alloc :uint8 :count (* 3 (floor (- (length string) start) 4)))))
-    (setf (slot-value buffer 'start) memory)
-    (with-input-from-string (in string :start start)
-      (let* ((decoder (qbase64:make-decoder))
-             (string (make-string 4))
-             (bytes (make-array 5))
-             (read-string t)
-             (buffered nil)
-             (eof nil))
-        (loop while (or buffered (not eof))
-              for end1 = (when read-string (read-sequence string in))
-              do (when (and read-string (< end1 (length string)))
-                   (setf eof T))
-                 (multiple-value-bind (end2 pending)
-                     (if read-string
-                         (qbase64:decode decoder string bytes :end1 end1)
-                         (qbase64:decode decoder "" bytes))
-                   (dotimes (i end2)
-                     (setf (cffi:mem-aref memory (incf start)) (aref bytes i)))
-                   (setf buffered pending
-                         read-string (or (not pending) (zerop end2)))))))))
-
-(defmethod close ((buffer uri-buffer) &key abort)
-  (declare (ignore abort))
-  (when (slot-boundp buffer 'start)
-    (cffi:foreign-free (start buffer))
-    (slot-makunbound buffer 'start)))
+         (memory (static-vectors:make-static-vector (* 3 (floor (- (length string) start) 4))))
+         (decoder (qbase64:make-decoder)))
+    (setf (slot-value buffer 'start) (static-vectors:static-vector-pointer memory))
+    (qbase64:decode decoder string memory :start1 start)))
 
 (define-element mmap-buffer (buffer)
   ((mmap :name null :reader mmap)))
