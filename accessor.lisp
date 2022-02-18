@@ -130,7 +130,7 @@
 (defmethod (setf sequences:elt) (value (buffer static-buffer) i)
   (setf (aref (buffer buffer) i) value))
 
-(defmethod close ((buffer uri-buffer) &key abort)
+(defmethod close ((buffer static-buffer) &key abort)
   (declare (ignore abort))
   (when (slot-boundp buffer 'buffer)
     (static-vectors:free-static-vector (buffer buffer))
