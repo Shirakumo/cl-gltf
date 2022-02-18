@@ -33,6 +33,15 @@
 (defmethod parse-from (json (type gltf-element) gltf)
   (apply #'make-instance (type-of type) :gltf gltf (initargs type json gltf)))
 
+(defmethod parse-from (json (type camera) gltf)
+  (cond ((gethash "perspective" json)
+         (apply #'make-instance 'perspective-camera :gltf gltf
+                (append (initargs 'perspective-camera (gethash "perspective" json) gltf)) (initargs type json gltf)))
+        ((gethash "orthographic" json)
+         (apply #'make-instance 'orthographic-camera :gltf gltf
+                (append (initargs 'orthographic-camera (gethash "orthographic" json) gltf)) (initargs type json gltf)))
+        (T (apply #'make-instance (type-of type) :gltf gltf (initargs type json gltf)))))
+
 (defmethod parse-from (json (type (eql 'filter)) gltf)
   (ecase json
     (9728 :nearest)

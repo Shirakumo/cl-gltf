@@ -140,7 +140,7 @@
 (define-element uri-buffer (static-buffer)
   ())
 
-(defmethod initialize-instance :after ((buffer uri-buffer) &key)
+(defmethod shared-initialize :after ((buffer uri-buffer) slots &key)
   (let* ((string (uri buffer))
          (start (1+ (position #\, string)))
          (memory (static-vectors:make-static-vector (* 3 (floor (- (length string) start) 4))))
@@ -151,7 +151,7 @@
 (define-element mmap-buffer (buffer)
   ((mmap :name null :reader mmap)))
 
-(defmethod initialize-instance :after ((buffer mmap-buffer) &key)
+(defmethod shared-initialize :after ((buffer mmap-buffer) slots &key)
   (unless (slot-boundp buffer 'mmap)
     (multiple-value-bind (start fd size) (mmap:mmap (path buffer))
       (setf (slot-value buffer 'mmap) (list start fd size))
