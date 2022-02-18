@@ -81,6 +81,12 @@
 (defmethod element-count ((type (eql :mat3))) 9)
 (defmethod element-count ((type (eql :mat4))) 16)
 
+(defmethod construct-element-reader ((element-type (eql :scalar)) component-type)
+  (element-reader component-type))
+
+(defmethod construct-element-writer ((element-type (eql :scalar)) component-type)
+  (element-writer component-type))
+
 (defmethod construct-element-reader (element-type component-type)
   (let* ((count (element-count element-type))
          (reader (element-reader component-type))
