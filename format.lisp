@@ -20,6 +20,9 @@
 (defmethod path ((element uri-element))
   (merge-pathnames (uri element) (uri (gltf element))))
 
+(define-element indexed-element (gltf-element)
+  ((idx :name NIL :accessor idx)))
+
 (define-element gltf (gltf-element)
   (uri
    (buffers :initform #() :parse buffer)
@@ -45,16 +48,16 @@
   (loop for buffer across (buffers gltf)
         do (close buffer)))
 
-(define-element asset (gltf-element)
+(define-element asset (indexed-element)
   (copyright
    generator
    version
    min-version))
 
-(define-element scene (named-element)
+(define-element scene (indexed-element named-element)
   ((nodes :initform #() :ref nodes)))
 
-(define-element node (named-element)
+(define-element node (indexed-element named-element)
   ((camera :ref cameras)
    (parent :name null :accessor parent)
    (children :initform #())
@@ -66,7 +69,7 @@
    translation
    weights))
 
-(define-element camera (named-element)
+(define-element camera (indexed-element named-element)
   ())
 
 (define-element orthographic-camera (camera)
@@ -81,7 +84,7 @@
    zfar
    znear))
 
-(define-element mesh (named-element)
+(define-element mesh (indexed-element named-element)
   ((primitives :initform #() :parse mesh-primitive)
    weights))
 
@@ -92,7 +95,7 @@
    (mode :initform 4)
    targets))
 
-(define-element material (named-element)
+(define-element material (indexed-element named-element)
   ((pbr :parse pbr :name "pbrMetallicRoughness")
    (normal-texture :parse texture-info)
    (occlusion-texture :parse texture-info)
@@ -102,7 +105,7 @@
    (alpha-cutoff :initform 0.5)
    (double-sided-p :initform NIL :name "doubleSided")))
 
-(define-element animation (named-element)
+(define-element animation (indexed-element named-element)
   ((channels :initform #() :parse animation-channel)
    (samplers :initform #() :parse animation-sampler)))
 
@@ -119,22 +122,22 @@
    (output :ref accessors)
    (interpolation :parse keyword)))
 
-(define-element image (uri-element named-element)
+(define-element image (indexed-element uri-element named-element)
   (mime-type
    (buffer-view :ref buffer-views)))
 
-(define-element sampler (named-element)
+(define-element sampler (indexed-element named-element)
   ((mag-filter :initform :linear :parse filter)
    (min-filter :initform :linear :parse filter)
    (wrap-s :initform :repeat :parse wrapping)
    (wrap-t :initform :repeat :parse wrapping)))
 
-(define-element skin (named-element)
+(define-element skin (indexed-element named-element)
   ((inverse-bind-matrices :ref accessors)
    (skeleton :ref nodes)
    (joints :initform #() :ref nodes)))
 
-(define-element texture (named-element)
+(define-element texture (indexed-element named-element)
   ((sampler :ref samplers)
    (source :ref images)))
 

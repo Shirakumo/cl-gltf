@@ -45,6 +45,8 @@
    #:uri-element
    #:uri
    #:path
+   #:indexed-element
+   #:idx
    #:gltf
    #:buffers
    #:buffer-views
