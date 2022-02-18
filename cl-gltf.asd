@@ -24,5 +24,6 @@
                :trivial-extensible-sequences
                :mmap
                :shasht
-               :cffi)
+               :cffi
+               :qbase64)
   :in-order-to ((asdf:test-op (asdf:test-op :cl-gltf-test))))
