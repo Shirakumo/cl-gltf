@@ -106,7 +106,7 @@
           (declare (ignore value))
           (setf ptr next-ptr))))))
 
-(define-element buffer (uri-element named-element sequences:sequence)
+(define-element buffer (indexed-element uri-element named-element sequences:sequence)
   ((start :name null :reader start)
    (byte-length :reader sequences:length :accessor byte-length)))
 
@@ -127,7 +127,7 @@
 (defmethod (setf sequences:elt) (value (buffer buffer) i)
   (setf (cffi:mem-aref (start buffer) :uint8 i) value))
 
-(define-element static-buffer (buffer)
+(defclass static-buffer (buffer)
   ((buffer :initarg :buffer :name null :reader buffer)))
 
 (defmethod sequences:elt ((buffer static-buffer) i)
@@ -143,7 +143,7 @@
     (slot-makunbound buffer 'start)
     (slot-makunbound buffer 'buffer)))
 
-(define-element uri-buffer (static-buffer)
+(defclass uri-buffer (static-buffer)
   ())
 
 (defmethod shared-initialize :after ((buffer uri-buffer) slots &key)
@@ -154,7 +154,7 @@
     (setf (slot-value buffer 'start) (static-vectors:static-vector-pointer memory))
     (qbase64:decode decoder string memory :start1 start)))
 
-(define-element mmap-buffer (buffer)
+(defclass mmap-buffer (buffer)
   ((mmap :name null :reader mmap)))
 
 (defmethod shared-initialize :after ((buffer mmap-buffer) slots &key)
@@ -170,7 +170,7 @@
     (slot-makunbound buffer 'mmap)
     (slot-makunbound buffer 'start)))
 
-(define-element buffer-view (named-element sequences:sequence)
+(define-element buffer-view (indexed-element named-element sequences:sequence)
   ((buffer :ref buffers)
    (start :name null :reader start)
    (byte-offset :initform 0)
@@ -188,7 +188,7 @@
 (defmethod (setf sequences:elt) (value (view buffer-view) i)
   (setf (cffi:mem-aref (start view) :uint8 (* i (byte-stride view))) value))
 
-(define-element accessor (sequences:sequence named-element)
+(define-element accessor (indexed-element sequences:sequence named-element)
   ((buffer-view :ref buffer-views)
    (byte-offset :initform 0)
    (component-type :name "componentType" :initform :float :parse element-type)
@@ -218,7 +218,7 @@
 (defmethod (setf sequences:elt) (value (accessor accessor) i)
   (funcall (element-writer accessor) value (cffi:inc-pointer (start accessor) (* (byte-stride accessor) i))))
 
-(define-element sparse-accessor (accessor)
+(defclass sparse-accessor (accessor)
   (index-count
    index-start
    index-byte-stride

@@ -101,7 +101,10 @@
            result))
 
        (defmethod describe-object ((type ,name) stream)
-         (format stream "~va~a~%" (* 2 *describe-indent*) "" (type-of type))
+         (format stream "~va~a" (* 2 *describe-indent*) "" (type-of type))
+         (if (typep type 'indexed-element)
+             (format stream " ~d" (idx type)))
+         (terpri stream)
          ,@(loop for (name . args) in slots
                  when (getf args :name)
                  collect `(describe-slot ',name (slot-value type ',name) ,maxlength stream))))))

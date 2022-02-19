@@ -106,7 +106,7 @@
                    do (setf (parent child) node)
                       (setf (aref children i) child))
              (when (skin node)
-               (resolve (skin node) 'skins gltf)))
+               (setf (skin node) (resolve (skin node) 'skins gltf))))
     type))
 
 (defun parse-glb-stream (stream)
