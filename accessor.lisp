@@ -175,7 +175,7 @@
    (start :name null :reader start)
    (byte-offset :initform 0)
    (byte-length :reader sequences:length :accessor byte-length)
-   (byte-stride :initform 1)
+   (byte-stride)
    target))
 
 (defmethod initialize-instance :after ((view buffer-view) &key)
@@ -183,10 +183,10 @@
     (setf (slot-value view 'start) (cffi:inc-pointer (start (buffer view)) (byte-offset view)))))
 
 (defmethod sequences:elt ((view buffer-view) i)
-  (cffi:mem-aref (start view) :uint8 (* i (byte-stride view))))
+  (cffi:mem-aref (start view) :uint8 (* i (or (byte-stride view) 1))))
 
 (defmethod (setf sequences:elt) (value (view buffer-view) i)
-  (setf (cffi:mem-aref (start view) :uint8 (* i (byte-stride view))) value))
+  (setf (cffi:mem-aref (start view) :uint8 (* i (or (byte-stride view) 1))) value))
 
 (define-element accessor (indexed-element sequences:sequence named-element)
   ((buffer-view :ref buffer-views)
@@ -206,7 +206,10 @@
   (unless (slot-boundp accessor 'start)
     (setf (slot-value accessor 'start) (cffi:inc-pointer (start (buffer-view accessor)) (byte-offset accessor))))
   (unless (slot-boundp accessor 'byte-stride)
-    (setf (slot-value accessor 'byte-stride) (byte-stride (buffer-view accessor))))
+    (setf (slot-value accessor 'byte-stride)
+          (or (byte-stride (buffer-view accessor))
+              (* (element-count (element-type accessor))
+                 (element-byte-stride (component-type accessor))))))
   (unless (slot-boundp accessor 'element-reader)
     (setf (slot-value accessor 'element-reader) (construct-element-reader (element-type accessor) (component-type accessor))))
   (unless (slot-boundp accessor 'element-writer)
