@@ -59,7 +59,7 @@
 
 (define-element node (indexed-element named-element)
   ((camera :ref cameras)
-   (parent :name null :accessor parent)
+   (parent :name null :initform NIL :accessor parent)
    (children :initform #())
    skin
    (mesh :ref meshes)
