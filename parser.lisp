@@ -36,10 +36,10 @@
 (defmethod parse-from (json (type camera) gltf)
   (cond ((gethash "perspective" json)
          (apply #'make-instance 'perspective-camera :gltf gltf
-                (append (initargs 'perspective-camera (gethash "perspective" json) gltf)) (initargs type json gltf)))
+                (append (initargs 'perspective-camera (gethash "perspective" json) gltf) (initargs type json gltf))))
         ((gethash "orthographic" json)
          (apply #'make-instance 'orthographic-camera :gltf gltf
-                (append (initargs 'orthographic-camera (gethash "orthographic" json) gltf)) (initargs type json gltf)))
+                (append (initargs 'orthographic-camera (gethash "orthographic" json) gltf) (initargs type json gltf))))
         (T (apply #'make-instance (type-of type) :gltf gltf (initargs type json gltf)))))
 
 (defmethod parse-from (json (type (eql 'filter)) gltf)
@@ -88,6 +88,7 @@
     (val 'buffers "buffers" 'buffer)
     (val 'buffer-views "bufferViews" 'buffer-view)
     (val 'accessors "accessors" 'accessor)
+    (val 'cameras "cameras" 'camera)
     (val 'asset "asset" 'asset)
     (val 'images "images" 'image)
     (val 'samplers "samplers" 'sampler)
@@ -146,9 +147,9 @@
     ((vector (unsigned-byte 8))
      (error "Implement GLB parsing from memory"))
     (stream
-     (cond ((eql '(unsigned-byte 8) (stream-element-type file))
+     (cond ((equal '(unsigned-byte 8) (stream-element-type file))
             (parse-glb-stream file))
-           ((eql 'character (stream-element-type file))
+           ((equal 'character (stream-element-type file))
             (let ((json (shasht:read-json file))
                   (gltf (make-instance 'gltf :uri file)))
               (parse-from json gltf gltf)))

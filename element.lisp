@@ -9,6 +9,9 @@
 (defgeneric initargs (type json gltf)
   (:method-combination append))
 
+(defmethod initargs append ((type symbol) json gltf)
+  (initargs (c2mop:class-prototype (find-class type)) json gltf))
+
 (defun removef (plist &rest keys)
   (loop for (key val) on plist by #'cddr
         for found = (find key keys)
