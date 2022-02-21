@@ -786,7 +786,7 @@ Can be one of the following:
   :SCALE
   :WEIGHTS
 
-See ANIMATION-CHANNEL-PATH")
+See ANIMATION-CHANNEL")
 
   (type animation-sampler
     "Representation of a sampler for an animation-channel.
