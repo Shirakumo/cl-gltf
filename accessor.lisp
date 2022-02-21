@@ -101,7 +101,7 @@
   (let ((count (element-count element-type))
         (writer (element-writer component-type)))
     (lambda (value ptr)
-      (dotimes (i count value)
+      (dotimes (i count ptr)
         (multiple-value-bind (value next-ptr) (funcall writer (aref value i) ptr)
           (declare (ignore value))
           (setf ptr next-ptr))))))

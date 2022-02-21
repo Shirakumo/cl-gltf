@@ -159,6 +159,6 @@
 (defmacro with-gltf ((gltf file) &body body)
   `(let ((,gltf (parse ,file)))
      (unwind-protect
-          (progn
+          (let ((,gltf ,gltf))
             ,@body)
        (close ,gltf))))

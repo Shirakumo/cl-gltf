@@ -28,7 +28,7 @@
    #:component-type
    #:element-type
    #:size
-   #:normalied
+   #:normalized
    #:maximum
    #:minimum
    #:byte-stride
@@ -69,7 +69,7 @@
    #:min-version
    #:scene
    #:nodes
-   #:nodes
+   #:node
    #:camera
    #:parent
    #:children
