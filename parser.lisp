@@ -57,6 +57,16 @@
     (33648 :mirrored-repeat)
     (10497 :repeat)))
 
+(defmethod parse-from (json (type (eql 'primitive-mode)) gltf)
+  (ecase json
+    (0 :points)
+    (1 :lines)
+    (2 :line-loop)
+    (3 :line-strip)
+    (4 :triangles)
+    (5 :triangle-strip)
+    (6 :triangle-fan)))
+
 (defmethod parse-from (json (type (eql 'element-type)) gltf)
   (normalize-type json))
 

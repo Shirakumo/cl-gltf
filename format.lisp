@@ -48,7 +48,7 @@
   (loop for buffer across (buffers gltf)
         do (close buffer)))
 
-(define-element asset (indexed-element)
+(define-element asset (gltf-element)
   (copyright
    generator
    version
@@ -92,7 +92,7 @@
   ((attributes :initform #() :parse mesh-attributes)
    (indices :initform #() :ref accessors)
    (material :ref materials)
-   (mode :initform 4)
+   (mode :initform :triangles :parse primitive-mode)
    targets))
 
 (define-element material (indexed-element named-element)
