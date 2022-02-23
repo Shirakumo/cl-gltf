@@ -120,7 +120,7 @@
 (define-element animation-sampler (gltf-element)
   ((input :ref accessors)
    (output :ref accessors)
-   (interpolation :parse keyword)))
+   (interpolation :initform :linear :parse keyword)))
 
 (define-element image (indexed-element uri-element named-element)
   (mime-type
