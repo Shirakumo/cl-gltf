@@ -128,19 +128,75 @@
                   (lambda (i) (file-position stream (+ (file-position stream) i)))
                   (lambda (i) (loop repeat i do (read-byte stream)))))
         (gltf (make-instance 'gltf :uri NIL)))
-    (loop for length = (nibbles:read-ub32/le stream)
-          for type = (nibbles:read-ub32/le stream)
-          do (case type
-               (#x4E4F534A                ; JSON
-                (parse-from (com.inuoe.jzon:parse stream) gltf gltf))
-               (#x004E4942                ; BIN
-                (let ((buffer (static-vectors:make-static-vector length)))
-                  (read-sequence buffer stream)
-                  (change-class (svref (buffers gltf) 0) 'static-buffer :buffer buffer)))
-               (T
-                (funcall skip length))))))
+    (loop for length = (handler-case (nibbles:read-ub32/le stream)
+                         (end-of-file () NIL))
+          while length
+          do (let ((type (nibbles:read-ub32/le stream)))
+               (case type
+                 (#x4E4F534A           ; JSON
+                  (parse-from (com.inuoe.jzon:parse stream) gltf gltf))
+                 (#x004E4942           ; BIN
+                  (let ((buffer (static-vectors:make-static-vector length)))
+                    (read-sequence buffer stream)
+                    (change-class (svref (buffers gltf) 0) 'static-buffer :buffer buffer)))
+                 (#x00000000           ; EOF
+                  (return))
+                 (T
+                  (warn "Unknown glb block type ~8,'0x" type)
+                  (funcall skip length)))))
+    gltf))
 
-(defun parse (file)
+(defun parse-glb-memory (ptr start end)
+  (let ((i start))
+    (flet ((read-ub32 ()
+             (prog1 (cffi:mem-ref (cffi:inc-pointer ptr i) :uint32)
+               (incf i 4))))
+      (assert (= (read-ub32) #x46546C67))
+      (assert (= (read-ub32) 2))
+      (read-ub32)
+      (let ((gltf (make-instance 'gltf :uri NIL)))
+        (loop while (< i end)
+              do (let ((length (read-ub32))
+                       (type (read-ub32)))
+                   (case type
+                     (#x4E4F534A        ; JSON
+                      (let ((json (cffi:foreign-string-to-lisp ptr :count length)))
+                        (parse-from (com.inuoe.jzon:parse json) gltf gltf)))
+                     (#x004E4942        ; BIN
+                      (setf (svref (buffers gltf) 0) (make-instance 'buffer :start ptr :byte-length length)))
+                     (#x00000000        ; EOF
+                      (return))
+                     (T
+                      (warn "Unknown glb block type ~8,'0x" type)))
+                   (incf i length)))
+        gltf))))
+
+(defun parse-glb-vector (vector start end)
+  (let ((i start))
+    (flet ((read-ub32 ()
+             (prog1 (nibbles:ub32ref/le vector i)
+               (incf i 4))))
+      (assert (= (read-ub32) #x46546C67))
+      (assert (= (read-ub32) 2))
+      (read-ub32)
+      (let ((gltf (make-instance 'gltf :uri NIL)))
+        (loop while end
+              do (let ((length (read-ub32))
+                       (type (read-ub32)))
+                   (case type
+                     (#x4E4F534A        ; JSON
+                      ;; FIXME: this sucks
+                      (parse-from (com.inuoe.jzon:parse (make-array length :displaced-to vector :displaced-index-offset i)) gltf gltf))
+                     (#x004E4942        ; BIN
+                      (change-class (svref (buffers gltf) 0) 'lisp-buffer :buffer vector :start i))
+                     (#x00000000        ; EOF
+                      (return))
+                     (T
+                      (warn "Unknown glb block type ~8,'0x" type)))
+                   (incf i length)))
+        gltf))))
+
+(defun parse (file &key (start 0) (end most-positive-fixnum))
   (etypecase file
     (pathname
      (cond ((string-equal "glb" (pathname-type file))
@@ -153,9 +209,9 @@
      (with-input-from-string (stream file)
        (parse stream)))
     (cffi:foreign-pointer
-     (error "Implement GLB parsing from memory"))
+     (parse-glb-memory file start end))
     ((vector (unsigned-byte 8))
-     (error "Implement GLB parsing from memory"))
+     (parse-glb-vector file start end))
     (stream
      (cond ((equal '(unsigned-byte 8) (stream-element-type file))
             (parse-glb-stream file))

@@ -110,11 +110,14 @@
   ((start :name null :reader start)
    (byte-length :reader sequences:length :accessor byte-length)))
 
-(defmethod initialize-instance :after ((buffer buffer) &key)
+(defmethod initialize-instance :after ((buffer buffer) &key start byte-length)
   (cond ((and (< (length "data:") (length (uri buffer)))
               (string= "data:" (uri buffer) :end2 (length "data:")))
          (change-class buffer 'uri-buffer))
         ((null (uri (gltf buffer))))
+        (start
+         (setf (slot-value buffer 'start) start)
+         (setf (byte-length buffer) byte-length))
         (T
          (change-class buffer 'mmap-buffer))))
 
@@ -127,14 +130,18 @@
 (defmethod (setf sequences:elt) (value (buffer buffer) i)
   (setf (cffi:mem-aref (start buffer) :uint8 i) value))
 
-(defclass static-buffer (buffer)
-  ((buffer :initarg :buffer :name null :reader buffer)))
+(defclass lisp-buffer (buffer)
+  ((start :initarg :start :initform 0)
+   (buffer :initarg :buffer :name null :reader buffer)))
 
-(defmethod sequences:elt ((buffer static-buffer) i)
-  (aref (buffer buffer) i))
+(defmethod sequences:elt ((buffer lisp-buffer) i)
+  (aref (buffer buffer) (+ i (start buffer))))
 
-(defmethod (setf sequences:elt) (value (buffer static-buffer) i)
-  (setf (aref (buffer buffer) i) value))
+(defmethod (setf sequences:elt) (value (buffer lisp-buffer) i)
+  (setf (aref (buffer buffer) (+ i (start buffer))) value))
+
+(defclass static-buffer (lisp-buffer)
+  ())
 
 (defmethod close ((buffer static-buffer) &key abort)
   (declare (ignore abort))
