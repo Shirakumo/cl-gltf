@@ -23,7 +23,7 @@
   :depends-on (:documentation-utils
                :trivial-extensible-sequences
                :mmap
-               :shasht
+               :com.inuoe.jzon
                :cffi
                :qbase64
                :nibbles

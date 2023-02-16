@@ -132,7 +132,7 @@
           for type = (nibbles:read-ub32/le stream)
           do (case type
                (#x4E4F534A                ; JSON
-                (parse-from (shasht:read-json stream T NIL T) gltf gltf))
+                (parse-from (com.inuoe.jzon:parse stream) gltf gltf))
                (#x004E4942                ; BIN
                 (let ((buffer (static-vectors:make-static-vector length)))
                   (read-sequence buffer stream)
@@ -160,7 +160,7 @@
      (cond ((equal '(unsigned-byte 8) (stream-element-type file))
             (parse-glb-stream file))
            ((equal 'character (stream-element-type file))
-            (let ((json (shasht:read-json file))
+            (let ((json (com.inuoe.jzon:parse file))
                   (gltf (make-instance 'gltf :uri file)))
               (parse-from json gltf gltf)))
            (T
