@@ -152,4 +152,4 @@
    (albedo-factor :initform #(1.0 1.0 1.0 1.0) :name "baseColorFactor")
    (metallic-factor :initform 1.0)
    (roughness-factor :initform 1.0)
-   (matallic-roughness :parse texture-info :name "metallicRoughnessTexture")))
+   (metallic-roughness :parse texture-info :name "metallicRoughnessTexture")))
