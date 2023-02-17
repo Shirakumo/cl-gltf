@@ -134,7 +134,7 @@
           do (let ((type (nibbles:read-ub32/le stream)))
                (case type
                  (#x4E4F534A           ; JSON
-                  (parse-from (com.inuoe.jzon:parse stream) gltf gltf))
+                  (parse-from (com.inuoe.jzon:parse stream :max-string-length array-dimension-limit) gltf gltf))
                  (#x004E4942           ; BIN
                   (let ((buffer (static-vectors:make-static-vector length)))
                     (read-sequence buffer stream)
@@ -161,7 +161,7 @@
                    (case type
                      (#x4E4F534A        ; JSON
                       (let ((json (cffi:foreign-string-to-lisp ptr :count length)))
-                        (parse-from (com.inuoe.jzon:parse json) gltf gltf)))
+                        (parse-from (com.inuoe.jzon:parse json :max-string-length array-dimension-limit) gltf gltf)))
                      (#x004E4942        ; BIN
                       (setf (svref (buffers gltf) 0) (make-instance 'buffer :start ptr :byte-length length)))
                      (#x00000000        ; EOF
@@ -186,7 +186,9 @@
                    (case type
                      (#x4E4F534A        ; JSON
                       ;; FIXME: this sucks
-                      (parse-from (com.inuoe.jzon:parse (make-array length :displaced-to vector :displaced-index-offset i)) gltf gltf))
+                      (parse-from (com.inuoe.jzon:parse (make-array length :displaced-to vector :displaced-index-offset i)
+                                                        :max-string-length array-dimension-limit)
+                                  gltf gltf))
                      (#x004E4942        ; BIN
                       (change-class (svref (buffers gltf) 0) 'lisp-buffer :buffer vector :start i))
                      (#x00000000        ; EOF
@@ -196,7 +198,7 @@
                    (incf i length)))
         gltf))))
 
-(defun parse (file &key (start 0) (end most-positive-fixnum))
+(defun parse (file &key (start 0) (end array-dimension-limit))
   (etypecase file
     (pathname
      (cond ((string-equal "glb" (pathname-type file))
@@ -216,7 +218,7 @@
      (cond ((equal '(unsigned-byte 8) (stream-element-type file))
             (parse-glb-stream file))
            ((equal 'character (stream-element-type file))
-            (let ((json (com.inuoe.jzon:parse file))
+            (let ((json (com.inuoe.jzon:parse file :max-string-length array-dimension-limit))
                   (gltf (make-instance 'gltf :uri file)))
               (parse-from json gltf gltf)))
            (T
