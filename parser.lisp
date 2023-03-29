@@ -134,7 +134,7 @@
           do (let ((type (nibbles:read-ub32/le stream)))
                (case type
                  (#x4E4F534A           ; JSON
-                  (parse-from (com.inuoe.jzon:parse stream :max-string-length NIL) gltf gltf))
+                  (parse-from (com.inuoe.jzon:parse stream :max-string-length NIL :allow-multiple-content T) gltf gltf))
                  (#x004E4942           ; BIN
                   (let ((buffer (static-vectors:make-static-vector length)))
                     (read-sequence buffer stream)
