@@ -87,7 +87,7 @@
 (defmethod parse-from (json (type gltf) gltf)
   (flet ((val (slot source type)
            (let ((source (gethash source json)))
-             (when source
+             (when (and source (= 0 (length (slot-value gltf slot))))
                (let ((result (parse-from source type gltf)))
                  (setf (slot-value gltf slot) result)
                  (when (typep result 'vector)
@@ -126,27 +126,35 @@
   (nibbles:read-ub32/le stream)
   (let ((skip (if (typep stream 'file-stream)
                   (lambda (i) (file-position stream (+ (file-position stream) i)))
-                  (lambda (i) (loop repeat i do (read-byte stream))))))
+                  (lambda (i) (loop repeat i do (read-byte stream)))))
+        json)
+    (setf (buffers gltf) (make-array 1 :initial-element NIL))
     (loop for length = (handler-case (nibbles:read-ub32/le stream)
                          (end-of-file () NIL))
           while length
           do (let ((type (nibbles:read-ub32/le stream)))
                (case type
                  (#x4E4F534A           ; JSON
-                  (parse-from (com.inuoe.jzon:parse stream :max-string-length NIL :allow-multiple-content T) gltf gltf))
+                  (when json (warn "Multiple JSON blocks, overwriting."))
+                  (setf json (com.inuoe.jzon:parse stream :max-string-length NIL :allow-multiple-content T)))
                  (#x004E4942           ; BIN
+                  (when (svref (buffers gltf) 0) (warn "Multiple BIN blocks, overwriting."))
                   (let ((buffer (static-vectors:make-static-vector length)))
                     (read-sequence buffer stream)
-                    (change-class (svref (buffers gltf) 0) 'static-buffer :start 0 :buffer buffer)))
+                    (setf (svref (buffers gltf) 0) (make-instance 'static-buffer :gltf gltf :idx 0 :start 0 :buffer buffer))))
                  (#x00000000           ; EOF
                   (return))
                  (T
                   (warn "Unknown glb block type ~8,'0x" type)
                   (funcall skip length)))))
+    (unless json (error "No JSON block present in GLB file."))
+    (parse-from json gltf gltf)
     gltf))
 
 (defun parse-glb-memory (ptr start end &optional (gltf (make-instance 'gltf :uri NIL)))
-  (let ((i start))
+  (let ((i start)
+        json)
+    (setf (buffers gltf) (make-array 1))
     (flet ((read-ub32 ()
              (prog1 (cffi:mem-ref (cffi:inc-pointer ptr i) :uint32)
                (incf i 4))))
@@ -158,19 +166,25 @@
                      (type (read-ub32)))
                  (case type
                    (#x4E4F534A        ; JSON
-                    (let ((json (cffi:foreign-string-to-lisp ptr :count length)))
-                      (parse-from (com.inuoe.jzon:parse json :max-string-length NIL) gltf gltf)))
+                    (let ((text (cffi:foreign-string-to-lisp (cffi:inc-pointer ptr i) :count length)))
+                      (when json (warn "Multiple JSON blocks, overwriting."))
+                      (setf json (com.inuoe.jzon:parse text :max-string-length NIL))))
                    (#x004E4942        ; BIN
-                    (setf (svref (buffers gltf) 0) (make-instance 'buffer :start ptr :byte-length length)))
+                    (when (svref (buffers gltf) 0) (warn "Multiple BIN blocks, overwriting."))
+                    (setf (svref (buffers gltf) 0) (make-instance 'buffer :gltf gltf :idx 0 :start (cffi:inc-pointer ptr i) :byte-length length)))
                    (#x00000000        ; EOF
                     (return))
                    (T
                     (warn "Unknown glb block type ~8,'0x" type)))
                  (incf i length)))
+      (unless json (error "No JSON block present in GLB file."))
+      (parse-from json gltf gltf)
       gltf)))
 
 (defun parse-glb-vector (vector start end &optional (gltf (make-instance 'gltf :uri NIL)))
-  (let ((i start))
+  (let ((i start)
+        json)
+    (setf (buffers gltf) (make-array 1))
     (flet ((read-ub32 ()
              (prog1 (nibbles:ub32ref/le vector i)
                (incf i 4))))
@@ -183,16 +197,19 @@
                  (case type
                    (#x4E4F534A        ; JSON
                     ;; FIXME: this sucks
-                    (parse-from (com.inuoe.jzon:parse (make-array length :displaced-to vector :displaced-index-offset i)
-                                                      :max-string-length NIL)
-                                gltf gltf))
+                    (when json (warn "Multiple JSON blocks, overwriting."))
+                    (setf json (com.inuoe.jzon:parse (make-array length :displaced-to vector :displaced-index-offset i)
+                                                     :max-string-length NIL)))
                    (#x004E4942        ; BIN
-                    (change-class (svref (buffers gltf) 0) 'lisp-buffer :buffer vector :start i))
+                    (when (svref (buffers gltf) 0) (warn "Multiple BIN blocks, overwriting."))
+                    (setf (svref (buffers gltf) 0) (make-instance 'lisp-buffer :gltf gltf :idx 0 :buffer vector :start i)))
                    (#x00000000        ; EOF
                     (return))
                    (T
                     (warn "Unknown glb block type ~8,'0x" type)))
                  (incf i length)))
+      (unless json (error "No JSON block present in GLB file."))
+      (parse-from json gltf gltf)
       gltf)))
 
 (defun parse (file &key (start 0) (end most-positive-fixnum) (mmap T))

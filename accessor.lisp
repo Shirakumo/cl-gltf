@@ -118,8 +118,10 @@
         (start
          (setf (slot-value buffer 'start) start)
          (setf (byte-length buffer) byte-length))
+        ((uri buffer)
+         (change-class buffer 'mmap-buffer))
         (T
-         (change-class buffer 'mmap-buffer))))
+         (error "Invalid buffer spec: neither URI nor START were supplied."))))
 
 (defmethod close ((buffer buffer) &key abort)
   (declare (ignore abort)))
