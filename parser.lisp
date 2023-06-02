@@ -137,7 +137,7 @@
                  (#x004E4942           ; BIN
                   (let ((buffer (static-vectors:make-static-vector length)))
                     (read-sequence buffer stream)
-                    (change-class (svref (buffers gltf) 0) 'static-buffer :buffer buffer)))
+                    (change-class (svref (buffers gltf) 0) 'static-buffer :start 0 :buffer buffer)))
                  (#x00000000           ; EOF
                   (return))
                  (T
