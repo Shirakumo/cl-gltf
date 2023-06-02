@@ -120,14 +120,13 @@
                (setf (skin node) (resolve (skin node) 'skins gltf))))
     type))
 
-(defun parse-glb-stream (stream)
+(defun parse-glb-stream (stream &optional (gltf (make-instance 'gltf :uri stream)))
   (assert (= (nibbles:read-ub32/le stream) #x46546C67))
   (assert (= (nibbles:read-ub32/le stream) 2))
   (nibbles:read-ub32/le stream)
   (let ((skip (if (typep stream 'file-stream)
                   (lambda (i) (file-position stream (+ (file-position stream) i)))
-                  (lambda (i) (loop repeat i do (read-byte stream)))))
-        (gltf (make-instance 'gltf :uri NIL)))
+                  (lambda (i) (loop repeat i do (read-byte stream))))))
     (loop for length = (handler-case (nibbles:read-ub32/le stream)
                          (end-of-file () NIL))
           while length
@@ -146,7 +145,7 @@
                   (funcall skip length)))))
     gltf))
 
-(defun parse-glb-memory (ptr start end)
+(defun parse-glb-memory (ptr start end &optional (gltf (make-instance 'gltf :uri NIL)))
   (let ((i start))
     (flet ((read-ub32 ()
              (prog1 (cffi:mem-ref (cffi:inc-pointer ptr i) :uint32)
@@ -154,24 +153,23 @@
       (assert (= (read-ub32) #x46546C67))
       (assert (= (read-ub32) 2))
       (read-ub32)
-      (let ((gltf (make-instance 'gltf :uri NIL)))
-        (loop while (< i end)
-              do (let ((length (read-ub32))
-                       (type (read-ub32)))
-                   (case type
-                     (#x4E4F534A        ; JSON
-                      (let ((json (cffi:foreign-string-to-lisp ptr :count length)))
-                        (parse-from (com.inuoe.jzon:parse json :max-string-length NIL) gltf gltf)))
-                     (#x004E4942        ; BIN
-                      (setf (svref (buffers gltf) 0) (make-instance 'buffer :start ptr :byte-length length)))
-                     (#x00000000        ; EOF
-                      (return))
-                     (T
-                      (warn "Unknown glb block type ~8,'0x" type)))
-                   (incf i length)))
-        gltf))))
+      (loop while (< i end)
+            do (let ((length (read-ub32))
+                     (type (read-ub32)))
+                 (case type
+                   (#x4E4F534A        ; JSON
+                    (let ((json (cffi:foreign-string-to-lisp ptr :count length)))
+                      (parse-from (com.inuoe.jzon:parse json :max-string-length NIL) gltf gltf)))
+                   (#x004E4942        ; BIN
+                    (setf (svref (buffers gltf) 0) (make-instance 'buffer :start ptr :byte-length length)))
+                   (#x00000000        ; EOF
+                    (return))
+                   (T
+                    (warn "Unknown glb block type ~8,'0x" type)))
+                 (incf i length)))
+      gltf)))
 
-(defun parse-glb-vector (vector start end)
+(defun parse-glb-vector (vector start end &optional (gltf (make-instance 'gltf :uri NIL)))
   (let ((i start))
     (flet ((read-ub32 ()
              (prog1 (nibbles:ub32ref/le vector i)
@@ -179,31 +177,33 @@
       (assert (= (read-ub32) #x46546C67))
       (assert (= (read-ub32) 2))
       (read-ub32)
-      (let ((gltf (make-instance 'gltf :uri NIL)))
-        (loop while end
-              do (let ((length (read-ub32))
-                       (type (read-ub32)))
-                   (case type
-                     (#x4E4F534A        ; JSON
-                      ;; FIXME: this sucks
-                      (parse-from (com.inuoe.jzon:parse (make-array length :displaced-to vector :displaced-index-offset i)
-                                                        :max-string-length NIL)
-                                  gltf gltf))
-                     (#x004E4942        ; BIN
-                      (change-class (svref (buffers gltf) 0) 'lisp-buffer :buffer vector :start i))
-                     (#x00000000        ; EOF
-                      (return))
-                     (T
-                      (warn "Unknown glb block type ~8,'0x" type)))
-                   (incf i length)))
-        gltf))))
+      (loop while end
+            do (let ((length (read-ub32))
+                     (type (read-ub32)))
+                 (case type
+                   (#x4E4F534A        ; JSON
+                    ;; FIXME: this sucks
+                    (parse-from (com.inuoe.jzon:parse (make-array length :displaced-to vector :displaced-index-offset i)
+                                                      :max-string-length NIL)
+                                gltf gltf))
+                   (#x004E4942        ; BIN
+                    (change-class (svref (buffers gltf) 0) 'lisp-buffer :buffer vector :start i))
+                   (#x00000000        ; EOF
+                    (return))
+                   (T
+                    (warn "Unknown glb block type ~8,'0x" type)))
+                 (incf i length)))
+      gltf)))
 
-(defun parse (file &key (start 0) (end most-positive-fixnum))
+(defun parse (file &key (start 0) (end most-positive-fixnum) (mmap T))
   (etypecase file
     (pathname
      (cond ((string-equal "glb" (pathname-type file))
-            (with-open-file (stream file :element-type '(unsigned-byte 8))
-              (parse stream)))
+            (if mmap
+                (multiple-value-bind (addr fd size) (mmap:mmap file)
+                  (parse-glb-memory addr 0 size (make-instance 'gltf :uri file :%mmap (list addr fd size))))
+                (with-open-file (stream file :element-type '(unsigned-byte 8))
+                  (parse stream))))
            (T
             (with-open-file (stream file :element-type 'character)
               (parse stream)))))

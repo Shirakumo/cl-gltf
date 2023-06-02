@@ -38,7 +38,8 @@
    (skins :initform #() :parse skin)
    (nodes :initform #() :parse node)
    (animations :initform #() :parse animation)
-   (scenes :initform #() :parse scene)))
+   (scenes :initform #() :parse scene)
+   (%mmap :initform NIL)))
 
 (defmethod initialize-instance :after ((gltf gltf) &key)
   (setf (slot-value gltf 'gltf) gltf))
@@ -46,7 +47,10 @@
 (defmethod close ((gltf gltf) &key abort)
   (declare (ignore abort))
   (loop for buffer across (buffers gltf)
-        do (close buffer)))
+        do (close buffer))
+  (when (%mmap gltf)
+    (apply #'mmap:munmap (%mmap gltf))
+    (setf (%mmap gltf) NIL)))
 
 (define-element asset (gltf-element)
   (copyright
