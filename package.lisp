@@ -69,6 +69,8 @@
    #:children
    #:skin
    #:mesh
+   #:lights
+   #:articulations
    #:matrix
    #:rotation
    #:scale
@@ -148,7 +150,16 @@
    #:intensity
    #:range
    #:inner-angle
-   #:outer-angle)
+   #:outer-angle
+   #:articulation
+   #:stages
+   #:pointing-vector
+   #:articulation-stage
+   #:name
+   #:kind
+   #:minimum-value
+   #:maximum-value
+   #:initial-value)
   ;; parser.lisp
   (:export
    #:parse

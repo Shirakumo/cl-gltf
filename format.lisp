@@ -34,6 +34,7 @@
    (animations :initform #() :parse animation)
    (scenes :initform #() :parse scene)
    (lights :initform #() :parse light :name ("extensions" "KHR_lights_punctual"))
+   (articulations :initform #() :parse articulation :name ("extensions" "AGI_articulations"))
    (%mmap :initform NIL)))
 
 (defmethod initialize-instance :after ((gltf gltf) &key)
@@ -61,6 +62,7 @@
    (parent :name null :initform NIL :accessor parent)
    (children :initform #())
    (lights :initform #() :ref lights :name ("extensions" "KHR_lights_punctual"))
+   (articulations :initform #() :ref articulations :name ("extensions" "AGI_articulations" "articulationName"))
    skin
    (mesh :ref meshes)
    matrix
@@ -161,3 +163,14 @@
    (range :initform NIL)
    (inner-angle :initform 0.0 :name ("spot" "innerConeAngle"))
    (outer-angle :initform (/ PI 4.0) :name ("spot" "outerConeAngle"))))
+
+(define-element articulation (named-element gltf-element)
+  ((stages :initform #() :parse articulation-stage)
+   pointing-vector))
+
+(define-element articulation-stage ()
+  (name
+   (kind :parse :keyword :name "type")
+   minimum-value
+   maximum-value
+   initial-value))
