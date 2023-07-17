@@ -105,7 +105,10 @@
    (emissive-factor :initform #(0.0 0.0 0.0))
    (alpha-mode :initform :opaque :parse keyword)
    (alpha-cutoff :initform 0.5)
-   (double-sided-p :initform NIL :name "doubleSided")))
+   (double-sided-p :initform NIL :name "doubleSided")
+   (occlusion-metalness-roughness-texture :parse texture-info :name ("extensions" "MSFT_packing_occlusionRoughnessMetallic" "occlusionRoughnessMetallicTexture"))
+   (roughness-metallic-occlusion-texture :parse texture-info :name ("extensions" "MSFT_packing_occlusionRoughnessMetallic" "roughnessMetallicOcclusionTexture"))
+   (2d-normal-texture :parse texture-info :name ("extensions" "MSFT_packing_occlusionRoughnessMetallic" "normalTexture"))))
 
 (define-element animation (indexed-element named-element)
   ((channels :initform #() :parse animation-channel)

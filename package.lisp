@@ -105,6 +105,9 @@
    #:alpha-mode
    #:alpha-cutoff
    #:double-sided-p
+   #:occlusion-metalness-roughness-texture
+   #:roughness-metallic-occlusion-texture
+   #:2d-normal-texture
    #:animation
    #:channels
    #:samplers
