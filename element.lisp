@@ -70,6 +70,15 @@
        (write-slot name)
        (format stream "~s~%" value)))))
 
+(defun access-json-form (name json none)
+  (labels ((handle (name)
+             (if (rest name)
+                 `(let ((,json ,(handle (rest name))))
+                    (if (eq ',none ,json) ,json
+                        (gethash ,(pop name) ,(handle name) ',none)))
+                 `(gethash ,(first name) ,json ',none))))
+    (handle (if (listp name) (reverse name) (list name)))))
+
 (defmacro define-element (name superclasses slots &rest options)
   (let* ((slots (loop for slot in slots collect (apply #'normalize-slotdef (if (listp slot) slot (list slot)))))
          (maxlength (loop for slot in slots maximize (length (string (first slot)))))
@@ -84,7 +93,7 @@
          (let ((result ()))
            ,@(loop for (slot . args) in slots
                    when (getf args :name)
-                   collect `(let ((value (gethash ,(getf args :name) json ',none)))
+                   collect `(let ((value ,(access-json-form (getf args :name) 'json none)))
                               (unless (eq value ',none)
                                 (push ,(destructuring-bind (&key ref parse &allow-other-keys) args
                                          (cond (ref
