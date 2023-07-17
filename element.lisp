@@ -75,7 +75,7 @@
              (if (rest name)
                  `(let ((,json ,(handle (rest name))))
                     (if (eq ',none ,json) ,json
-                        (gethash ,(pop name) ,(handle name) ',none)))
+                        (gethash ,(pop name) ,json ',none)))
                  `(gethash ,(first name) ,json ',none))))
     (handle (if (listp name) (reverse name) (list name)))))
 
