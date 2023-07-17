@@ -25,4 +25,5 @@ The following official extension specs are supported:
 
 - AGI_articulations
 - KHR_lights_punctual
+- MSFT_lod
 - MSFT_packing_occlusionRoughnessMetallic

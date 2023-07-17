@@ -64,6 +64,8 @@
    #:scene
    #:nodes
    #:node
+   #:lods
+   #:lod-screen-coverage
    #:camera
    #:parent
    #:children

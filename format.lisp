@@ -63,6 +63,8 @@
    (children :initform #())
    (lights :initform #() :ref lights :name ("extensions" "KHR_lights_punctual"))
    (articulations :initform #() :ref articulations :name ("extensions" "AGI_articulations" "articulationName"))
+   (lods :initform #() :ref nodes :name ("extensions" "MSFT_lod" "ids"))
+   (lod-screen-coverage :initform #() :name ("extras" "MSFT_screencoverage"))
    skin
    (mesh :ref meshes)
    matrix
@@ -108,7 +110,9 @@
    (double-sided-p :initform NIL :name "doubleSided")
    (occlusion-metalness-roughness-texture :parse texture-info :name ("extensions" "MSFT_packing_occlusionRoughnessMetallic" "occlusionRoughnessMetallicTexture"))
    (roughness-metallic-occlusion-texture :parse texture-info :name ("extensions" "MSFT_packing_occlusionRoughnessMetallic" "roughnessMetallicOcclusionTexture"))
-   (2d-normal-texture :parse texture-info :name ("extensions" "MSFT_packing_occlusionRoughnessMetallic" "normalTexture"))))
+   (2d-normal-texture :parse texture-info :name ("extensions" "MSFT_packing_occlusionRoughnessMetallic" "normalTexture"))
+   (lods :initform #() :ref nodes :name ("extensions" "MSFT_lod" "ids"))
+   (lod-screen-coverage :initform #() :name ("extras" "MSFT_screencoverage"))))
 
 (define-element animation (indexed-element named-element)
   ((channels :initform #() :parse animation-channel)
