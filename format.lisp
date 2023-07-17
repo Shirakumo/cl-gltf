@@ -34,6 +34,7 @@
    (animations :initform #() :parse animation)
    (scenes :initform #() :parse scene)
    (lights :initform #() :parse light :name ("extensions" "KHR_lights_punctual"))
+   (image-lights :initform #() :parse image-light :name ("extensions" "EXT_lights_image_based"))
    (articulations :initform #() :parse articulation :name ("extensions" "AGI_articulations"))
    (%mmap :initform NIL)))
 
@@ -55,7 +56,8 @@
    min-version))
 
 (define-element scene (indexed-element named-element)
-  ((nodes :initform #() :ref nodes)))
+  ((nodes :initform #() :ref nodes)
+   (light :initform NIL :ref image-lights :name ("extensions" "EXT_lights_image_based" "light"))))
 
 (define-element node (indexed-element named-element)
   ((camera :ref cameras)
@@ -170,6 +172,13 @@
    (range :initform NIL)
    (inner-angle :initform 0.0 :name ("spot" "innerConeAngle"))
    (outer-angle :initform (/ PI 4.0) :name ("spot" "outerConeAngle"))))
+
+(define-element image-light (indexed-element named-element)
+  ((rotation :initform #(0.0 0.0 0.0 1.0))
+   (intensity :initform 1.0)
+   irradiance-coefficients
+   specular-image-size
+   (specular-images :ref images)))
 
 (define-element articulation (named-element gltf-element)
   ((stages :initform #() :parse articulation-stage)

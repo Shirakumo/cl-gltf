@@ -21,9 +21,10 @@ The following are still left to do:
 - Writing files
 
 ## Supported Extensions
-The following official extension specs are supported:
+The following official extension specs are explicitly supported:
 
 - AGI_articulations
+- EXT_lights_image_based
 - KHR_lights_punctual
 - MSFT_lod
 - MSFT_packing_occlusionRoughnessMetallic

@@ -56,6 +56,9 @@
    #:nodes
    #:animations
    #:scenes
+   #:lights
+   #:image-lights
+   #:articulations
    #:asset
    #:copyright
    #:generator
@@ -63,6 +66,7 @@
    #:min-version
    #:scene
    #:nodes
+   #:light
    #:node
    #:lods
    #:lod-screen-coverage
@@ -156,6 +160,12 @@
    #:range
    #:inner-angle
    #:outer-angle
+   #:image-light
+   #:rotation
+   #:intensity
+   #:irradiance-coefficients
+   #:specular-image-size
+   #:specular-images
    #:articulation
    #:stages
    #:pointing-vector
