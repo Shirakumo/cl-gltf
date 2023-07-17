@@ -33,6 +33,7 @@
    (nodes :initform #() :parse node)
    (animations :initform #() :parse animation)
    (scenes :initform #() :parse scene)
+   (lights :initform #() :parse light :name ("extensions" "KHR_lights_punctual"))
    (%mmap :initform NIL)))
 
 (defmethod initialize-instance :after ((gltf gltf) &key)
@@ -59,6 +60,7 @@
   ((camera :ref cameras)
    (parent :name null :initform NIL :accessor parent)
    (children :initform #())
+   (lights :initform #() :ref lights :name ("extensions" "KHR_lights_punctual"))
    skin
    (mesh :ref meshes)
    matrix
@@ -151,3 +153,11 @@
    (metallic-factor :initform 1.0)
    (roughness-factor :initform 1.0)
    (metallic-roughness :parse texture-info :name "metallicRoughnessTexture")))
+
+(define-element light (indexed-element named-element gltf-element)
+  ((kind :parse :keyword :name "type")
+   (color :initform #(1.0 1.0 1.0))
+   (intensity :initform 1.0)
+   (range :initform NIL)
+   (inner-angle :initform 0.0 :name ("spot" "innerConeAngle"))
+   (outer-angle :initform (/ PI 4.0) :name ("spot" "outerConeAngle"))))

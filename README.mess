@@ -17,6 +17,11 @@ However, if you would like to customise the way the data is read out, such as to
 ## To Do
 The following are still left to do:
 
-- Loading from pointers or byte arrays
 - Direct support of the ratified extensions
 - Writing files
+
+## Supported Extensions
+The following official extension specs are supported:
+
+- KHR_lights_punctual
+

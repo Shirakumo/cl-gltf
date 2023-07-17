@@ -141,7 +141,14 @@
    #:albedo-factor
    #:metallic-factor
    #:roughness-factor
-   #:metallic-roughness)
+   #:metallic-roughness
+   #:light
+   #:kind
+   #:color
+   #:intensity
+   #:range
+   #:inner-angle
+   #:outer-angle)
   ;; parser.lisp
   (:export
    #:parse
