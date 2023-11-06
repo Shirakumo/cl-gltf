@@ -28,3 +28,5 @@ The following official extension specs are explicitly supported:
 - KHR_lights_punctual
 - MSFT_lod
 - MSFT_packing_occlusionRoughnessMetallic
+- MSFT_collision_primitives
+- MSFT_rigid_bodies

@@ -174,7 +174,62 @@
    #:kind
    #:minimum-value
    #:maximum-value
-   #:initial-value)
+   #:initial-value
+   #:collider
+   #:collision-systems
+   #:collide-with-systems
+   #:not-collide-with-systems
+   #:box
+   #:capsule
+   #:convex
+   #:cylinder
+   #:sphere
+   #:trimesh
+   #:box-collider
+   #:size
+   #:capsule-collider
+   #:height
+   #:radius
+   #:convex-collider
+   #:mesh
+   #:cylinder-collider
+   #:height
+   #:radius
+   #:sphere-collider
+   #:radius
+   #:trimesh-collider
+   #:mesh
+   #:rigidbody
+   #:kinematic-p
+   #:mass
+   #:center-of-mass
+   #:inertia-tensor
+   #:linear-velocity
+   #:angular-velocity
+   #:gravity-factor
+   #:physics-material
+   #:static-friction
+   #:dynamic-friction
+   #:restitution
+   #:friction-combine
+   #:restitution-combine
+   #:physics-joint
+   #:connected-node
+   #:joint-limits
+   #:collision-enabled-p
+   #:physics-joint-limit
+   #:min
+   #:max
+   #:spring-constant
+   #:spring-damping
+   #:linear-axes
+   #:angular-axes
+   #:colliders
+   #:rigidbody
+   #:physics-joint
+   #:physics-material
+   #:physics-materials
+   #:physics-joint-limits)
   ;; parser.lisp
   (:export
    #:parse

@@ -36,6 +36,8 @@
    (lights :initform #() :parse light :name ("extensions" "KHR_lights_punctual"))
    (image-lights :initform #() :parse image-light :name ("extensions" "EXT_lights_image_based"))
    (articulations :initform #() :parse articulation :name ("extensions" "AGI_articulations"))
+   (physics-materials :initform #() :parse physics-material :name ("extensions" "MSFT_rigid_bodies" "physicsMaterials"))
+   (physics-joint-limits :initform #() :parse physics-joint-limit :name ("extensions" "MSFT_rigid_bodies" "physicsJointLimits"))
    (%mmap :initform NIL)))
 
 (defmethod initialize-instance :after ((gltf gltf) &key)
@@ -67,6 +69,10 @@
    (articulations :initform #() :ref articulations :name ("extensions" "AGI_articulations" "articulationName"))
    (lods :initform #() :ref nodes :name ("extensions" "MSFT_lod" "ids"))
    (lod-screen-coverage :initform #() :name ("extras" "MSFT_screencoverage"))
+   (colliders :initform #() :parse collider :name ("extensions" "MSFT_collision_primitives" "colliders"))
+   (rigidbody :initform NIL :parse rigidbody :name ("extensions" "MSFT_rigid_bodies" "rigidBody"))
+   (physics-joint :initform NIL :parse physics-joint :name ("extensions" "MSFT_rigid_bodies" "joint"))
+   (physics-material :initform NIL :ref physics-materials :name ("extensions" "MSFT_rigid_bodies" "physicsMaterial"))
    skin
    (mesh :ref meshes)
    matrix
@@ -190,3 +196,63 @@
    minimum-value
    maximum-value
    initial-value))
+
+(define-element collider ()
+  (collision-systems
+   collide-with-systems
+   not-collide-with-systems
+   (box :parse box-collider)
+   (capsule :parse capsule-collider)
+   (convex :parse convex-collider)
+   (cylinder :parse cylinder-collider)
+   (sphere :parse sphere-collider)
+   (trimesh :parse trimesh-collider)))
+
+(define-element box-collider ()
+  ((size :initform #(1.0 1.0 1.0))))
+
+(define-element capsule-collider ()
+  ((height :initform 0.5)
+   (radius :initform 0.25)))
+
+(define-element convex-collider ()
+  ((mesh :ref meshes)))
+
+(define-element cylinder-collider ()
+  ((height :initform 0.5)
+   (radius :initform 0.25)))
+
+(define-element sphere-collider ()
+  ((radius :initform 0.5)))
+
+(define-element trimesh-collider ()
+  ((mesh :ref meshes)))
+
+(define-element rigidbody ()
+  ((kinematic-p :name "isKinematic")
+   (mass :initform 1.0)
+   (center-of-mass :initform #(0.0 0.0 0.0))
+   (inertia-tensor :initform #(1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0))
+   (linear-velocity :initform #(0.0 0.0 0.0))
+   (angular-velocity :initform #(0.0 0.0 0.0))
+   (gravity-factor :initform 1.0)))
+
+(define-element physics-material ()
+  ((static-friction :initform 0.6)
+   (dynamic-friction :initform 0.6)
+   (restitution :initform 0.0)
+   (friction-combine :parse :keyword)
+   (restitution-combine :parse :keyword)))
+
+(define-element physics-joint ()
+  ((connected-node :ref nodes)
+   (joint-limits :ref physics-joint-limits)
+   (collision-enabled-p :name "enableCollision")))
+
+(define-element physics-joint-limit ()
+  (min
+   max
+   spring-constant
+   spring-damping
+   linear-axes
+   angular-axes))
