@@ -218,8 +218,8 @@
    #:joint-limits
    #:collision-enabled-p
    #:physics-joint-limit
-   #:min
-   #:max
+   #:minimum-value
+   #:maximum-value
    #:spring-constant
    #:spring-damping
    #:linear-axes

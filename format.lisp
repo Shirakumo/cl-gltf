@@ -250,8 +250,8 @@
    (collision-enabled-p :name "enableCollision")))
 
 (define-element physics-joint-limit ()
-  (min
-   max
+  ((minimum-value :name "min")
+   (maximum-value :name "max")
    spring-constant
    spring-damping
    linear-axes
