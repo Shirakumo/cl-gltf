@@ -70,6 +70,10 @@
    #:node
    #:lods
    #:lod-screen-coverage
+   #:collider
+   #:rigidbody
+   #:physics-joint
+   #:physics-material
    #:camera
    #:parent
    #:children

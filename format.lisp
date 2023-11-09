@@ -38,6 +38,7 @@
    (articulations :initform #() :parse articulation :name ("extensions" "AGI_articulations"))
    (physics-materials :initform #() :parse physics-material :name ("extensions" "MSFT_rigid_bodies" "physicsMaterials"))
    (physics-joint-limits :initform #() :parse physics-joint-limit :name ("extensions" "MSFT_rigid_bodies" "physicsJointLimits"))
+   (colliders :initform #() :parse collider :name ("extensions" "MSFT_collision_primitives" "colliders"))
    (%mmap :initform NIL)))
 
 (defmethod initialize-instance :after ((gltf gltf) &key)
@@ -69,7 +70,7 @@
    (articulations :initform #() :ref articulations :name ("extensions" "AGI_articulations" "articulationName"))
    (lods :initform #() :ref nodes :name ("extensions" "MSFT_lod" "ids"))
    (lod-screen-coverage :initform #() :name ("extras" "MSFT_screencoverage"))
-   (colliders :initform #() :parse collider :name ("extensions" "MSFT_collision_primitives" "colliders"))
+   (collider :initform NIL :ref collider :name ("extensions" "MSFT_rigid_bodies" "collider"))
    (rigidbody :initform NIL :parse rigidbody :name ("extensions" "MSFT_rigid_bodies" "rigidBody"))
    (physics-joint :initform NIL :parse physics-joint :name ("extensions" "MSFT_rigid_bodies" "joint"))
    (physics-material :initform NIL :ref physics-materials :name ("extensions" "MSFT_rigid_bodies" "physicsMaterial"))
