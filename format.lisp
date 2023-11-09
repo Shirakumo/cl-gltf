@@ -209,24 +209,24 @@
    (sphere :parse sphere-collider)
    (trimesh :parse trimesh-collider)))
 
-(define-element box-collider ()
+(define-element box-collider (collider)
   ((size :initform #(1.0 1.0 1.0))))
 
-(define-element capsule-collider ()
+(define-element capsule-collider (collider)
   ((height :initform 0.5)
    (radius :initform 0.25)))
 
-(define-element convex-collider ()
+(define-element convex-collider (collider)
   ((mesh :ref meshes)))
 
-(define-element cylinder-collider ()
+(define-element cylinder-collider (collider)
   ((height :initform 0.5)
    (radius :initform 0.25)))
 
-(define-element sphere-collider ()
+(define-element sphere-collider (collider)
   ((radius :initform 0.5)))
 
-(define-element trimesh-collider ()
+(define-element trimesh-collider (collider)
   ((mesh :ref meshes)))
 
 (define-element rigidbody ()

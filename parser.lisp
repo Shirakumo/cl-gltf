@@ -36,6 +36,19 @@
                 (append (initargs 'orthographic-camera (gethash "orthographic" json) gltf) (initargs type json gltf))))
         (T (apply #'make-instance (type-of type) :gltf gltf (initargs type json gltf)))))
 
+(defmethod parse-from (json (type collider) gltf)
+  (loop for (field type) in '(("box" box-collider)
+                              ("capsule" capsule-collider)
+                              ("convex" convex-collider)
+                              ("cylinder" cylinder-collider)
+                              ("sphere" sphere-collider)
+                              ("trimesh" trimesh-collider))
+        for value = (gethash field json)
+        thereis (when value
+                  (apply #'make-instance type :gltf gltf
+                         (append (initargs type value gltf) (initargs type json gltf))))
+        finally (return (apply #'make-instance (type-of type) :gltf gltf (initargs type json gltf)))))
+
 (defmethod parse-from (json (type (eql 'filter)) gltf)
   (ecase json
     (9728 :nearest)
