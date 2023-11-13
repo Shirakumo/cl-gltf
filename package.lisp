@@ -70,8 +70,9 @@
    #:node
    #:lods
    #:lod-screen-coverage
-   #:collider
+   #:shape
    #:rigidbody
+   #:trigger
    #:physics-joint
    #:physics-material
    #:camera
@@ -81,6 +82,10 @@
    #:mesh
    #:lights
    #:articulations
+   #:shapes
+   #:physics-materials
+   #:physics-joint-limits
+   #:collision-filters
    #:matrix
    #:rotation
    #:scale
@@ -179,38 +184,37 @@
    #:minimum-value
    #:maximum-value
    #:initial-value
-   #:collider
-   #:collision-systems
-   #:collide-with-systems
-   #:not-collide-with-systems
-   #:box
-   #:capsule
-   #:convex
-   #:cylinder
-   #:sphere
-   #:trimesh
-   #:box-collider
+   #:shape
+   #:box-shape
    #:size
-   #:capsule-collider
+   #:capsule-shape
    #:height
    #:radius
-   #:convex-collider
+   #:convex-shape
    #:mesh
-   #:cylinder-collider
+   #:cylinder-shape
    #:height
    #:radius
-   #:sphere-collider
+   #:sphere-shape
    #:radius
-   #:trimesh-collider
+   #:trimesh-shape
    #:mesh
+   #:collider
+   #:shape
+   #:physics-material
+   #:collision-filter
    #:rigidbody
    #:kinematic-p
    #:mass
    #:center-of-mass
-   #:inertia-tensor
+   #:inertia-orientation
+   #:inertia-diagonal
    #:linear-velocity
    #:angular-velocity
    #:gravity-factor
+   #:trigger
+   #:shape
+   #:collision-filter
    #:physics-material
    #:static-friction
    #:dynamic-friction
@@ -228,12 +232,10 @@
    #:spring-damping
    #:linear-axes
    #:angular-axes
-   #:colliders
-   #:rigidbody
-   #:physics-joint
-   #:physics-material
-   #:physics-materials
-   #:physics-joint-limits)
+   #:collision-filter
+   #:collision-systems
+   #:collide-with-systems
+   #:not-collide-with-systems)
   ;; parser.lisp
   (:export
    #:parse

@@ -36,9 +36,10 @@
    (lights :initform #() :parse light :name ("extensions" "KHR_lights_punctual"))
    (image-lights :initform #() :parse image-light :name ("extensions" "EXT_lights_image_based"))
    (articulations :initform #() :parse articulation :name ("extensions" "AGI_articulations"))
-   (physics-materials :initform #() :parse physics-material :name ("extensions" "MSFT_rigid_bodies" "physicsMaterials"))
-   (physics-joint-limits :initform #() :parse physics-joint-limit :name ("extensions" "MSFT_rigid_bodies" "physicsJointLimits"))
-   (colliders :initform #() :parse collider :name ("extensions" "MSFT_collision_primitives" "colliders"))
+   (shapes :initform #() :parse shape :name ("extensions" "KHR_collision_shapes" "shapes"))
+   (physics-materials :initform #() :parse physics-material :name ("extensions" "KHR_rigid_bodies" "physicsMaterials"))
+   (physics-joint-limits :initform #() :parse physics-joint-limit :name ("extensions" "KHR_rigid_bodies" "physicsJointLimits"))
+   (collision-filters :initform #() :parse collision-filter :name ("extensions" "KHR_rigid_bodies" "collisionFilters"))
    (%mmap :initform NIL)))
 
 (defmethod initialize-instance :after ((gltf gltf) &key)
@@ -70,10 +71,10 @@
    (articulations :initform #() :ref articulations :name ("extensions" "AGI_articulations" "articulationName"))
    (lods :initform #() :ref nodes :name ("extensions" "MSFT_lod" "ids"))
    (lod-screen-coverage :initform #() :name ("extras" "MSFT_screencoverage"))
-   (collider :initform NIL :ref collider :name ("extensions" "MSFT_rigid_bodies" "collider"))
-   (rigidbody :initform NIL :parse rigidbody :name ("extensions" "MSFT_rigid_bodies" "rigidBody"))
-   (physics-joint :initform NIL :parse physics-joint :name ("extensions" "MSFT_rigid_bodies" "joint"))
-   (physics-material :initform NIL :ref physics-materials :name ("extensions" "MSFT_rigid_bodies" "physicsMaterial"))
+   (collider :initform NIL :parse collider :name ("extensions" "KHR_rigid_bodies" "collider"))
+   (rigidbody :initform NIL :parse rigidbody :name ("extensions" "KHR_rigid_bodies" "motion"))
+   (trigger :initform NIL :parse trigger :name ("extensions" "KHR_rigid_bodies" "trigger"))
+   (physics-joint :initform NIL :parse physics-joint :name ("extensions" "KHR_rigid_bodies" "joint"))
    skin
    (mesh :ref meshes)
    matrix
@@ -198,39 +199,47 @@
    maximum-value
    initial-value))
 
-(define-element collider ()
-  (collision-systems
-   collide-with-systems
-   not-collide-with-systems))
+(define-element shape ()
+  ())
 
-(define-element box-collider (collider)
+(define-element box-shape (shape)
   ((size :initform #(1.0 1.0 1.0))))
 
-(define-element capsule-collider (collider)
+(define-element capsule-shape (shape)
   ((height :initform 0.5)
    (radius :initform 0.25)))
 
-(define-element convex-collider (collider)
+(define-element convex-shape (shape)
   ((mesh :ref meshes)))
 
-(define-element cylinder-collider (collider)
+(define-element cylinder-shape (shape)
   ((height :initform 0.5)
    (radius :initform 0.25)))
 
-(define-element sphere-collider (collider)
+(define-element sphere-shape (shape)
   ((radius :initform 0.5)))
 
-(define-element trimesh-collider (collider)
+(define-element trimesh-shape (shape)
   ((mesh :ref meshes)))
+
+(define-element collider ()
+  ((shape :ref shapes)
+   (physics-material :ref physics-materials)
+   (collision-filter :ref collision-filters)))
 
 (define-element rigidbody ()
   ((kinematic-p :name "isKinematic")
    (mass :initform 1.0)
    (center-of-mass :initform #(0.0 0.0 0.0))
-   (inertia-tensor :initform #(1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0))
+   (inertia-orientation :initform #(0.0 0.0 0.0 0.0))
+   (inertia-diagonal :initform #(1.0 1.0 1.0))
    (linear-velocity :initform #(0.0 0.0 0.0))
    (angular-velocity :initform #(0.0 0.0 0.0))
    (gravity-factor :initform 1.0)))
+
+(define-element trigger ()
+  ((shape :ref shapes)
+   (collision-filter :ref collision-filters)))
 
 (define-element physics-material ()
   ((static-friction :initform 0.6)
@@ -251,3 +260,8 @@
    spring-damping
    linear-axes
    angular-axes))
+
+(define-element collision-filter ()
+  (collision-systems
+   not-collide-with-systems
+   collide-with-systems))
