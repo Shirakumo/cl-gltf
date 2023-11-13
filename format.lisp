@@ -201,13 +201,7 @@
 (define-element collider ()
   (collision-systems
    collide-with-systems
-   not-collide-with-systems
-   (box :parse box-collider)
-   (capsule :parse capsule-collider)
-   (convex :parse convex-collider)
-   (cylinder :parse cylinder-collider)
-   (sphere :parse sphere-collider)
-   (trimesh :parse trimesh-collider)))
+   not-collide-with-systems))
 
 (define-element box-collider (collider)
   ((size :initform #(1.0 1.0 1.0))))
