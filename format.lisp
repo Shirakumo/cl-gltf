@@ -192,14 +192,14 @@
   ((stages :initform #() :parse articulation-stage)
    pointing-vector))
 
-(define-element articulation-stage ()
+(define-element articulation-stage (gltf-element)
   (name
    (kind :parse :keyword :name "type")
    minimum-value
    maximum-value
    initial-value))
 
-(define-element shape ()
+(define-element shape (gltf-element)
   ())
 
 (define-element box-shape (shape)
@@ -222,12 +222,12 @@
 (define-element trimesh-shape (shape)
   ((mesh :ref meshes)))
 
-(define-element collider ()
+(define-element collider (gltf-element)
   ((shape :ref shapes)
    (physics-material :ref physics-materials)
    (collision-filter :ref collision-filters)))
 
-(define-element rigidbody ()
+(define-element rigidbody (gltf-element)
   ((kinematic-p :name "isKinematic")
    (mass :initform 1.0)
    (center-of-mass :initform #(0.0 0.0 0.0))
@@ -237,23 +237,23 @@
    (angular-velocity :initform #(0.0 0.0 0.0))
    (gravity-factor :initform 1.0)))
 
-(define-element trigger ()
+(define-element trigger (gltf-element)
   ((shape :ref shapes)
    (collision-filter :ref collision-filters)))
 
-(define-element physics-material ()
+(define-element physics-material (gltf-element)
   ((static-friction :initform 0.6)
    (dynamic-friction :initform 0.6)
    (restitution :initform 0.0)
    (friction-combine :parse :keyword)
    (restitution-combine :parse :keyword)))
 
-(define-element physics-joint ()
+(define-element physics-joint (gltf-element)
   ((connected-node :ref nodes)
    (joint-limits :ref physics-joint-limits)
    (collision-enabled-p :name "enableCollision")))
 
-(define-element physics-joint-limit ()
+(define-element physics-joint-limit (gltf-element)
   ((minimum-value :name "min")
    (maximum-value :name "max")
    spring-constant
@@ -261,7 +261,7 @@
    linear-axes
    angular-axes))
 
-(define-element collision-filter ()
+(define-element collision-filter (gltf-element)
   (collision-systems
    not-collide-with-systems
    collide-with-systems))
