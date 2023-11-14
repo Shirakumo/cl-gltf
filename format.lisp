@@ -8,6 +8,10 @@
 (define-element named-element (gltf-element)
   (name))
 
+(defmethod print-object ((element named-element) stream)
+  (print-unreadable-object (element stream :type T)
+    (format stream "~s" (name element))))
+
 (define-element uri-element (gltf-element)
   (uri))
 
@@ -16,6 +20,10 @@
 
 (define-element indexed-element (gltf-element)
   ((idx :name NIL :accessor idx)))
+
+(defmethod print-object ((element indexed-element) stream)
+  (print-unreadable-object (element stream :type T)
+    (format stream "#~d" (idx element))))
 
 (define-element gltf (gltf-element)
   (uri
@@ -59,11 +67,11 @@
    version
    min-version))
 
-(define-element scene (indexed-element named-element)
+(define-element scene (named-element indexed-element)
   ((nodes :initform #() :ref nodes)
    (light :initform NIL :ref image-lights :name ("extensions" "EXT_lights_image_based" "light"))))
 
-(define-element node (indexed-element named-element)
+(define-element node (named-element indexed-element)
   ((camera :ref cameras)
    (parent :name null :initform NIL :accessor parent)
    (children :initform #())
@@ -83,7 +91,7 @@
    translation
    weights))
 
-(define-element camera (indexed-element named-element)
+(define-element camera (named-element indexed-element)
   ())
 
 (define-element orthographic-camera (camera)
@@ -98,7 +106,7 @@
    zfar
    znear))
 
-(define-element mesh (indexed-element named-element)
+(define-element mesh (named-element indexed-element)
   ((primitives :initform #() :parse mesh-primitive)
    weights))
 
@@ -109,7 +117,7 @@
    (mode :initform :triangles :parse primitive-mode)
    targets))
 
-(define-element material (indexed-element named-element)
+(define-element material (named-element indexed-element)
   ((pbr :parse pbr :name "pbrMetallicRoughness")
    (normal-texture :parse texture-info)
    (occlusion-texture :parse texture-info)
@@ -124,7 +132,7 @@
    (lods :initform #() :ref nodes :name ("extensions" "MSFT_lod" "ids"))
    (lod-screen-coverage :initform #() :name ("extras" "MSFT_screencoverage"))))
 
-(define-element animation (indexed-element named-element)
+(define-element animation (named-element indexed-element)
   ((channels :initform #() :parse animation-channel)
    (samplers :initform #() :parse animation-sampler)))
 
@@ -145,18 +153,18 @@
   (mime-type
    (buffer-view :ref buffer-views)))
 
-(define-element sampler (indexed-element named-element)
+(define-element sampler (named-element indexed-element)
   ((mag-filter :initform :linear :parse filter)
    (min-filter :initform :linear :parse filter)
    (wrap-s :initform :repeat :parse wrapping)
    (wrap-t :initform :repeat :parse wrapping)))
 
-(define-element skin (indexed-element named-element)
+(define-element skin (named-element indexed-element)
   ((inverse-bind-matrices :ref accessors)
    (skeleton :ref nodes)
    (joints :initform #() :ref nodes)))
 
-(define-element texture (indexed-element named-element)
+(define-element texture (named-element indexed-element)
   ((sampler :ref samplers)
    (source :ref images)))
 
@@ -181,7 +189,7 @@
    (inner-angle :initform 0.0 :name ("spot" "innerConeAngle"))
    (outer-angle :initform (/ PI 4.0) :name ("spot" "outerConeAngle"))))
 
-(define-element image-light (indexed-element named-element)
+(define-element image-light (named-element indexed-element)
   ((rotation :initform #(0.0 0.0 0.0 1.0))
    (intensity :initform 1.0)
    irradiance-coefficients
