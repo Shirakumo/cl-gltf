@@ -92,7 +92,7 @@
     table))
 
 (defun gethash* (table &rest keys)
-  (if keys
+  (if (and table keys)
       (apply #'gethash* (gethash (first keys) table) (rest keys))
       table))
 
