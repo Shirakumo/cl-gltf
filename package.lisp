@@ -189,12 +189,14 @@
    #:size
    #:capsule-shape
    #:height
-   #:radius
+   #:radius-top
+   #:radius-bottom
    #:convex-shape
    #:mesh
    #:cylinder-shape
    #:height
-   #:radius
+   #:radius-top
+   #:radius-bottom
    #:sphere-shape
    #:radius
    #:trimesh-shape

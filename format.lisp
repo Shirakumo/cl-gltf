@@ -215,14 +215,16 @@
 
 (define-element capsule-shape (shape)
   ((height :initform 0.5)
-   (radius :initform 0.25)))
+   (radius-top :initform 0.25)
+   (radius-bottom :initform 0.25)))
 
 (define-element convex-shape (shape)
   ((mesh :ref meshes)))
 
 (define-element cylinder-shape (shape)
   ((height :initform 0.5)
-   (radius :initform 0.25)))
+   (radius-top :initform 0.25)
+   (radius-bottom :initform 0.25)))
 
 (define-element sphere-shape (shape)
   ((radius :initform 0.5)))
