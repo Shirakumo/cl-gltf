@@ -13,6 +13,7 @@
                (:file "format")
                (:file "accessor")
                (:file "parser")
+               (:file "printer")
                (:file "documentation"))
   :depends-on (:documentation-utils
                :trivial-extensible-sequences
