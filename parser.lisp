@@ -29,12 +29,11 @@
 
 (defmethod parse-from (json (type camera) gltf)
   (cond ((gethash "perspective" json)
-         (apply #'make-instance 'perspective-camera :gltf gltf
-                (append (initargs 'perspective-camera (gethash "perspective" json) gltf) (initargs type json gltf))))
+         (parse-from json 'perspective-camera gltf))
         ((gethash "orthographic" json)
-         (apply #'make-instance 'orthographic-camera :gltf gltf
-                (append (initargs 'orthographic-camera (gethash "orthographic" json) gltf) (initargs type json gltf))))
-        (T (apply #'make-instance (type-of type) :gltf gltf (initargs type json gltf)))))
+         (parse-from json 'orthographic-camera gltf))
+        (T
+         (call-next-method))))
 
 (defmethod parse-from (json (type shape) gltf)
   (loop for (field type) in '(("box" box-shape)
@@ -44,10 +43,8 @@
                               ("sphere" sphere-shape)
                               ("trimesh" trimesh-shape))
         for value = (gethash field json)
-        thereis (when value
-                  (apply #'make-instance type :gltf gltf
-                         (append (initargs type value gltf) (initargs type json gltf))))
-        finally (return (apply #'make-instance (type-of type) :gltf gltf (initargs type json gltf)))))
+        thereis (when value (parse-from json type gltf))
+        finally (return (call-next-method))))
 
 (defmethod parse-from (json (type (eql 'filter)) gltf)
   (ecase json

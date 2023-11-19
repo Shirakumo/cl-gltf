@@ -99,16 +99,16 @@
   ())
 
 (define-element orthographic-camera (camera)
-  (xmag
-   ymag
-   zfar
-   znear))
+  ((xmag :name ("orthographic" "xmag"))
+   (ymag :name ("orthographic" "ymag"))
+   (zfar :name ("orthographic" "zfar"))
+   (znear :name ("orthographic" "znear"))))
 
 (define-element perspective-camera (camera)
-  (aspect-ratio
-   fov
-   zfar
-   znear))
+  ((aspect-ratio :name ("perspective" "aspectRatio"))
+   (fov :name ("perspective" "fov"))
+   (zfar :name ("perspective" "zfar"))
+   (znear :name ("perspective" "znear"))))
 
 (define-element mesh (named-element indexed-element)
   ((primitives :initform #() :parse mesh-primitive)
@@ -215,26 +215,26 @@
   ())
 
 (define-element box-shape (shape)
-  ((size :initform #(1.0 1.0 1.0))))
+  ((size :initform #(1.0 1.0 1.0) :name ("box" "size"))))
 
 (define-element capsule-shape (shape)
-  ((height :initform 0.5)
-   (radius-top :initform 0.25)
-   (radius-bottom :initform 0.25)))
+  ((height :initform 0.5 :name ("capsule" "height"))
+   (radius-top :initform 0.25 :name ("capsule" "radiusTop"))
+   (radius-bottom :initform 0.25 :name ("capsule" "radiusBottom"))))
 
 (define-element convex-shape (shape)
-  ((mesh :ref meshes)))
+  ((mesh :ref meshes :name ("convex" "mesh"))))
 
 (define-element cylinder-shape (shape)
-  ((height :initform 0.5)
-   (radius-top :initform 0.25)
-   (radius-bottom :initform 0.25)))
+  ((height :initform 0.5 :name ("cylinder" "height"))
+   (radius-top :initform 0.25 :name ("cylinder" "radiusTop"))
+   (radius-bottom :initform 0.25 :name ("cylinder" "radiusBottom"))))
 
 (define-element sphere-shape (shape)
-  ((radius :initform 0.5)))
+  ((radius :initform 0.5 :name ("sphere" "radius"))))
 
 (define-element trimesh-shape (shape)
-  ((mesh :ref meshes)))
+  ((mesh :ref meshes :name ("trimesh" "mesh"))))
 
 (define-element collider (gltf-element)
   ((shape :ref shapes)

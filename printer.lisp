@@ -1,15 +1,5 @@
 (in-package #:org.shirakumo.fraf.gltf)
 
-;; Special destructuring
-(defmethod to-json ((type perspective-camera) writer))
-(defmethod to-json ((type orthographic-camera) writer))
-(defmethod to-json ((type box-shape) writer))
-(defmethod to-json ((type capsule-shape) writer))
-(defmethod to-json ((type convex-shape) writer))
-(defmethod to-json ((type cylinder-shape) writer))
-(defmethod to-json ((type sphere-shape) writer))
-(defmethod to-json ((type trimesh-shape) writer))
-
 (defun merge-buffers (gltf)
   (when (< 1 (length (buffers gltf)))
     (let* ((data (static-vectors:make-static-vector
