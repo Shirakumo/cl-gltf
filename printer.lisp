@@ -12,7 +12,6 @@
       (loop for buffer across (buffers gltf)
             for start = 0
             do (etypecase buffer
-                 ;; FIXME: close mmap buffers if necessary
                  (static-buffer
                   (static-vectors:replace-foreign-memory
                    (cffi:inc-pointer ptr start)
@@ -47,7 +46,6 @@
               (setf (uri buffer) NIL)
               (change-class buffer 'static-buffer))
              (mmap-buffer
-              ;; FIXME: close mmap buffers if necessary
               (let ((data (static-vectors:make-static-vector (byte-length buffer))))
                 (static-vectors:replace-foreign-memory
                  (static-vectors:static-vector-pointer data)
@@ -61,7 +59,6 @@
 (defun urlify-buffers (gltf)
   (loop for buffer across (buffers gltf)
         do (etypecase buffer
-             ;; FIXME: close mmap buffers if necessary
              (uri-buffer)
              (lisp-buffer
               (change-class buffer 'uri-buffer)

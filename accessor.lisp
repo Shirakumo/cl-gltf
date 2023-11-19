@@ -174,6 +174,11 @@
     (slot-makunbound buffer 'mmap)
     (slot-makunbound buffer 'start)))
 
+(defmethod update-instance-for-different-class ((old mmap-buffer) (new buffer) &key)
+  (unless (or (typep new 'mmap-buffer)
+              (equal (mmap old) (%mmap (gltf old))))
+    (apply #'mmap:munmap (mmap old))))
+
 (define-element buffer-view (indexed-element named-element sequences:sequence)
   ((buffer :ref buffers)
    (start :name null :reader start)
