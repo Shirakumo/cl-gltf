@@ -122,10 +122,10 @@
                     (typecase v
                       ,@(unless (eql name 'gltf) ; KLUDGE: hack to serialise base gltf object
                           `((indexed-element (com.inuoe.jzon:write-value writer (idx v)))))
-                      (gltf-element (to-json value writer))
+                      (gltf-element (to-json v writer))
                       (T (com.inuoe.jzon:write-value writer v))))
                   (entry (k v)
-                    (etypecase v
+                    (etypecase k
                       (string
                        (com.inuoe.jzon:write-key writer k)
                        (value v))
@@ -136,7 +136,8 @@
                          (com.inuoe.jzon:write-key writer key))
                        (value v)
                        (dolist (key (rest k))
-                         (com.inuoe.jzon:end-object))))))
+                         (com.inuoe.jzon:end-object writer))))))
+           (declare (ignorable #'value #'entry))
            ,@(loop for (slot . args) in slots
                    when (getf args :name)
                    collect `(entry ',(getf args :name) (slot-value type ',slot)))))
