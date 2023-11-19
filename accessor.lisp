@@ -128,7 +128,8 @@
 
 (defclass lisp-buffer (buffer)
   ((start :initarg :start :initform 0)
-   (buffer :initarg :buffer :name null :reader buffer)))
+   (buffer :initarg :buffer :name null :reader buffer)
+   (byte-length :initarg :byte-length)))
 
 (defmethod sequences:elt ((buffer lisp-buffer) i)
   (aref (buffer buffer) (+ i (start buffer))))

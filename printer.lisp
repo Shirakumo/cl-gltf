@@ -1,14 +1,42 @@
 (in-package #:org.shirakumo.fraf.gltf)
 
-(defun total-buffer-length (buffers)
-  (loop for buffer across buffers
-        unless (typep buffer 'uri-buffer)
-        maximize (+ (start buffer) (byte-length buffer))))
-
 (defun merge-buffers (gltf)
   (when (< 1 (length (buffers gltf)))
-    (let ((array (static-vectors:make-static-vector (total-buffer-length (buffers gltf)))))
-      ()))
+    (let* ((data (static-vectors:make-static-vector
+                 (loop for buffer across (buffers gltf)
+                       maximize (byte-length buffer))))
+           (ptr (static-vectors:static-vector-pointer data))
+           (new-buffer (make-instance 'static-buffer :idx 0 :gltf gltf :buffer data :byte-length (length data))))
+      ;; Copy all the buffer data into one array and "normalize" each buffer into an
+      ;; offset into the one data array.
+      (loop for buffer across (buffers gltf)
+            for start = 0
+            do (etypecase buffer
+                 ;; FIXME: close mmap buffers if necessary
+                 (static-buffer
+                  (static-vectors:replace-foreign-memory
+                   (cffi:inc-pointer ptr start)
+                   (cffi:inc-pointer (static-vectors:static-vector-pointer (buffer buffer)) (start buffer))
+                   (byte-length buffer)))
+                 (lisp-buffer
+                  (replace data (buffer buffer) :start1 start :start2 (start buffer)))
+                 (buffer
+                  (static-vectors:replace-foreign-memory
+                   (cffi:inc-pointer ptr start)
+                   (start buffer)
+                   (byte-length buffer))))
+               (change-class buffer 'buffer)
+               (setf (slot-value buffer 'start) (cffi:inc-pointer ptr start))
+               (incf start (byte-length buffer)))
+      ;; Now update all buffer views to point to the new buffer
+      (loop for view across (buffer-views gltf)
+            for old-buffer = (buffer view)
+            for offset = (- (cffi:pointer-address (start old-buffer)) (cffi:pointer-address ptr))
+            do (setf (buffer view) new-buffer)
+               (setf (byte-offset view) (+ offset (byte-offset view)))
+               (setf (slot-value view 'start) (cffi:inc-pointer ptr (byte-offset view))))
+      ;; And update the buffer array
+      (setf (buffers gltf) (vector new-buffer))))
   gltf)
 
 (defun normalize-buffers (gltf)
@@ -19,6 +47,7 @@
               (setf (uri buffer) NIL)
               (change-class buffer 'static-buffer))
              (mmap-buffer
+              ;; FIXME: close mmap buffers if necessary
               (let ((data (static-vectors:make-static-vector (byte-length buffer))))
                 (static-vectors:replace-foreign-memory
                  (static-vectors:static-vector-pointer data)
@@ -32,6 +61,7 @@
 (defun urlify-buffers (gltf)
   (loop for buffer across (buffers gltf)
         do (etypecase buffer
+             ;; FIXME: close mmap buffers if necessary
              (uri-buffer)
              (lisp-buffer
               (change-class buffer 'uri-buffer)
