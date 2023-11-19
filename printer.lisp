@@ -6,13 +6,42 @@
         maximize (+ (start buffer) (byte-length buffer))))
 
 (defun merge-buffers (gltf)
-  )
+  (when (< 1 (length (buffers gltf)))
+    (let ((array (static-vectors:make-static-vector (total-buffer-length (buffers gltf)))))
+      ()))
+  gltf)
 
 (defun normalize-buffers (gltf)
-  )
+  (loop for buffer across (buffers gltf)
+        for i from 0
+        do (etypecase buffer
+             (uri-buffer
+              (setf (uri buffer) NIL)
+              (change-class buffer 'static-buffer))
+             (mmap-buffer
+              (let ((data (static-vectors:make-static-vector (byte-length buffer))))
+                (static-vectors:replace-foreign-memory
+                 (static-vectors:static-vector-pointer data)
+                 (start buffer) (byte-length buffer))
+                (change-class buffer 'static-buffer :buffer data :start 0)))
+             (buffer))
+           (unless (uri buffer)
+             (setf (uri buffer) (format NIL "buf-~4,'0d.dat" i))))
+  gltf)
 
 (defun urlify-buffers (gltf)
-  )
+  (loop for buffer across (buffers gltf)
+        do (etypecase buffer
+             (uri-buffer)
+             (lisp-buffer
+              (change-class buffer 'uri-buffer)
+              (setf (uri buffer) (format NIL "data:;base64,~a" (qbase64:encode-bytes (buffer buffer)))))
+             (buffer
+              (let ((data (static-vectors:make-static-vector (byte-length buffer))))
+                (replace data buffer)
+                (change-class buffer 'uri-buffer)
+                (setf (uri buffer) (format NIL "data:;base64,~a" (qbase64:encode-bytes data)))))))
+  gltf)
 
 (defun serialize (gltf file &key (if-exists :supersede))
   (etypecase file
@@ -49,7 +78,7 @@
                  (write-sequence (buffer buf) file))
                 (mmap-buffer
                  ;; FFI? How to get the stream FD?
-                 (write-sequence buffer stream)))))
+                 (write-sequence buf file)))))
            ((equal 'character (stream-element-type file))
             (dolist (buffer (buffers gltf))
               (etypecase buffer
