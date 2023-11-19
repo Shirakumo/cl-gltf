@@ -6,6 +6,17 @@
 (defmethod initargs append ((type symbol) json gltf)
   (initargs (c2mop:class-prototype (find-class type)) json gltf))
 
+(defgeneric to-json (value writer)
+  (:method-combination progn))
+
+(defmethod to-json progn (type (writer null))
+  (com.inuoe.jzon:with-writer (writer :stream NIL)
+    (to-json type writer)))
+
+(defmethod to-json progn (type (stream stream))
+  (com.inuoe.jzon:with-writer (writer :stream stream)
+    (to-json type writer)))
+
 (defun removef (plist &rest keys)
   (loop for (key val) on plist by #'cddr
         for found = (find key keys)
@@ -105,6 +116,29 @@
                                       result)
                                 (push ,(getf args :initarg) result))))
            result))
+
+       (defmethod to-json progn ((type ,name) writer)
+         (labels ((value (v)
+                    (typecase v
+                      (indexed-element (com.inuoe.jzon:write-value writer (idx v)))
+                      (gltf-element (to-json value writer))
+                      (T (com.inuoe.jzon:write-value writer v))))
+                  (entry (k v)
+                    (etypecase v
+                      (string
+                       (com.inuoe.jzon:write-key writer k)
+                       (value v))
+                      (cons
+                       (com.inuoe.jzon:write-key writer (first k))
+                       (dolist (key (rest k))
+                         (com.inuoe.jzon:begin-object writer)
+                         (com.inuoe.jzon:write-key writer key))
+                       (value v)
+                       (dolist (key (rest k))
+                         (com.inuoe.jzon:end-object))))))
+           ,@(loop for (slot . args) in slots
+                   when (getf args :name)
+                   collect `(entry ',(getf args :name) (slot-value type ',slot)))))
 
        (defmethod describe-object ((type ,name) stream)
          (format stream "~va~a" (* 2 *describe-indent*) "" (type-of type))

@@ -5,6 +5,10 @@
    extras
    (gltf :name null :initarg :gltf :initform NIL :reader gltf)))
 
+(defmethod to-json :around ((element gltf-element) writer)
+  (com.inuoe.jzon:with-object writer
+    (call-next-method)))
+
 (define-element named-element (gltf-element)
   (name))
 
@@ -48,7 +52,7 @@
    (physics-materials :initform #() :parse physics-material :name ("extensions" "KHR_rigid_bodies" "physicsMaterials"))
    (physics-joint-limits :initform #() :parse physics-joint-limit :name ("extensions" "KHR_rigid_bodies" "physicsJointLimits"))
    (collision-filters :initform #() :parse collision-filter :name ("extensions" "KHR_rigid_bodies" "collisionFilters"))
-   (%mmap :initform NIL)))
+   (%mmap :name null :initform NIL)))
 
 (defmethod initialize-instance :after ((gltf gltf) &key)
   (setf (slot-value gltf 'gltf) gltf))
