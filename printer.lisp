@@ -103,22 +103,26 @@
               (etypecase buf
                 (lisp-buffer
                  (write-sequence (buffer buf) file))
-                (mmap-buffer
+                (buffer
                  ;; FFI? How to get the stream FD?
                  (write-sequence buf file)))))
            ((equal 'character (stream-element-type file))
             (dolist (buffer (buffers gltf))
               (etypecase buffer
                 (uri-buffer)
-                (mmap-buffer
-                 (error "Cannot serialise with MMAP buffers present.
-Please call URLIFY-BUFFERS or NORMALIZE-BUFFERS first."))
-                (buffer
+                (lisp-buffer
                  (with-open-file (stream (merge-pathnames (uri buffer) file)
                                          :direction :output
                                          :element-type '(unsigned-byte 8)
                                          :if-exists if-exists)
-                   (write-sequence (buffer buffer) stream)))))
+                   (write-sequence (buffer buffer) stream)))
+                (buffer
+                 ;; FFI?
+                 (with-open-file (stream (merge-pathnames (uri buffer) file)
+                                         :direction :output
+                                         :element-type '(unsigned-byte 8)
+                                         :if-exists if-exists)
+                   (write-sequence buffer stream)))))
             (to-json gltf file))
            (T
             (error "Can't write to a stream with element type other than CHARACTER or (UNSIGNED-BYTE 8)."))))))
