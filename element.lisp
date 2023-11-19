@@ -120,7 +120,8 @@
        (defmethod to-json progn ((type ,name) writer)
          (labels ((value (v)
                     (typecase v
-                      (indexed-element (com.inuoe.jzon:write-value writer (idx v)))
+                      ,@(unless (eql name 'gltf) ; KLUDGE: hack to serialise base gltf object
+                          `((indexed-element (com.inuoe.jzon:write-value writer (idx v)))))
                       (gltf-element (to-json value writer))
                       (T (com.inuoe.jzon:write-value writer v))))
                   (entry (k v)
