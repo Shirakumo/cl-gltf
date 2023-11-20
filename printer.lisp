@@ -70,6 +70,9 @@
                 (setf (uri buffer) (format NIL "data:;base64,~a" (qbase64:encode-bytes data)))))))
   gltf)
 
+(defun to-json (thing output)
+  (com.inuoe.jzon:stringify (to-table thing NIL) :stream output))
+
 (defun serialize (gltf file &key (if-exists :supersede))
   (etypecase file
     (string

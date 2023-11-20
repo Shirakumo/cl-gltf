@@ -5,10 +5,6 @@
    extras
    (gltf :name null :initarg :gltf :initform NIL :reader gltf)))
 
-(defmethod to-json :around ((element gltf-element) writer)
-  (com.inuoe.jzon:with-object writer
-    (call-next-method)))
-
 (define-element named-element (gltf-element)
   (name))
 
@@ -23,7 +19,7 @@
   (merge-pathnames (uri element) (uri (gltf element))))
 
 (define-element indexed-element (gltf-element)
-  ((idx :name NIL :accessor idx)))
+  ((idx :name null :initarg :idx :accessor idx)))
 
 (defmethod print-object ((element indexed-element) stream)
   (print-unreadable-object (element stream :type T)
@@ -52,7 +48,7 @@
    (physics-materials :initform #() :parse physics-material :name ("extensions" "KHR_rigid_bodies" "physicsMaterials"))
    (physics-joint-limits :initform #() :parse physics-joint-limit :name ("extensions" "KHR_rigid_bodies" "physicsJointLimits"))
    (collision-filters :initform #() :parse collision-filter :name ("extensions" "KHR_rigid_bodies" "collisionFilters"))
-   (%mmap :name null :initform NIL)))
+   (%mmap :initarg :%mmap :name null :accessor %mmap :initform NIL)))
 
 (defmethod initialize-instance :after ((gltf gltf) &key)
   (setf (slot-value gltf 'gltf) gltf))
@@ -211,7 +207,7 @@
    maximum-value
    initial-value))
 
-(define-element shape (gltf-element)
+(define-element shape (indexed-element)
   ())
 
 (define-element box-shape (shape)
@@ -255,7 +251,7 @@
   ((shape :ref shapes)
    (collision-filter :ref collision-filters)))
 
-(define-element physics-material (gltf-element)
+(define-element physics-material (indexed-element)
   ((static-friction :initform 0.6)
    (dynamic-friction :initform 0.6)
    (restitution :initform 0.0)
@@ -267,7 +263,7 @@
    (joint-limits :ref physics-joint-limits)
    (collision-enabled-p :name "enableCollision")))
 
-(define-element physics-joint-limit (gltf-element)
+(define-element physics-joint-limit (indexed-element)
   ((minimum-value :name "min")
    (maximum-value :name "max")
    spring-constant
@@ -275,7 +271,7 @@
    linear-axes
    angular-axes))
 
-(define-element collision-filter (gltf-element)
+(define-element collision-filter (indexed-element)
   (collision-systems
    not-collide-with-systems
    collide-with-systems))

@@ -6,16 +6,13 @@
 (defmethod initargs append ((type symbol) json gltf)
   (initargs (c2mop:class-prototype (find-class type)) json gltf))
 
-(defgeneric to-json (value writer)
+(defgeneric to-table (value table)
   (:method-combination progn))
 
-(defmethod to-json progn (type (writer null))
-  (com.inuoe.jzon:with-writer (writer :stream NIL)
-    (to-json type writer)))
-
-(defmethod to-json progn (type (stream stream))
-  (com.inuoe.jzon:with-writer (writer :stream stream)
-    (to-json type writer)))
+(defmethod to-table progn (type (table null))
+  (let ((table (make-hash-table :test 'equal)))
+    (to-table type table)
+    table))
 
 (defun removef (plist &rest keys)
   (loop for (key val) on plist by #'cddr
@@ -90,6 +87,17 @@
                  `(gethash ,(first name) ,json ',none))))
     (handle (if (listp name) (reverse name) (list name)))))
 
+(defun set-table (table k v)
+  (let ((existing (gethash k table)))
+    (etypecase existing
+      (null
+       (setf (gethash k table) v))
+      (hash-table
+       (when v
+         (loop for key being the hash-keys of v using (hash-value value)
+               do (setf (gethash key existing) value)))
+       existing))))
+
 (defmacro define-element (name superclasses slots &rest options)
   (let* ((slots (loop for slot in slots collect (apply #'normalize-slotdef (if (listp slot) slot (list slot)))))
          (maxlength (loop for slot in slots maximize (length (string (first slot)))))
@@ -117,29 +125,28 @@
                                 (push ,(getf args :initarg) result))))
            result))
 
-       (defmethod to-json progn ((type ,name) writer)
-         (labels ((value (v)
-                    (typecase v
-                      ,@(unless (eql name 'gltf) ; KLUDGE: hack to serialise base gltf object
-                          `((indexed-element (com.inuoe.jzon:write-value writer (idx v)))))
-                      (gltf-element (to-json value writer))
-                      (T (com.inuoe.jzon:write-value writer v))))
-                  (entry (k v)
-                    (etypecase v
+       (defmethod to-table progn ((type ,name) (table hash-table))
+         (labels ((entry (k v)
+                    (etypecase k
                       (string
-                       (com.inuoe.jzon:write-key writer k)
-                       (value v))
+                       (set-table table k v))
                       (cons
-                       (com.inuoe.jzon:write-key writer (first k))
-                       (dolist (key (rest k))
-                         (com.inuoe.jzon:begin-object writer)
-                         (com.inuoe.jzon:write-key writer key))
-                       (value v)
-                       (dolist (key (rest k))
-                         (com.inuoe.jzon:end-object))))))
+                       (loop with tab = table
+                             for (key . rest) on k
+                             do (if rest
+                                    (setf tab (set-table tab key (make-hash-table :test 'equal)))
+                                    (set-table tab key v)))))))
+           (declare (ignorable #'entry))
            ,@(loop for (slot . args) in slots
                    when (getf args :name)
-                   collect `(entry ',(getf args :name) (slot-value type ',slot)))))
+                   collect `(entry ',(getf args :name)
+                                   ,(destructuring-bind (&key ref parse &allow-other-keys) args
+                                      (cond (ref
+                                             `(unresolve (slot-value type ',slot)))
+                                            (parse
+                                             `(serialize-to ',parse (slot-value type ',slot)))
+                                            (T
+                                             `(slot-value type ',slot))))))))
 
        (defmethod describe-object ((type ,name) stream)
          (format stream "~va~a" (* 2 *describe-indent*) "" (type-of type))
