@@ -1,3 +1,6 @@
+## About cl-gltf
+This library implements the glTF file format both for parsing and serialising, as well as several extensions to the specification. glTF is a pretty good format for 3D scene interchange and delivery.
+
 ## How To
 For the purposes of this tutorial we'll assume the package ``org.shirakumo.fraf.gltf`` has the local nickname ``gltf``. After loading the library, you can parse a glTF or GLB file as follows:
 
@@ -13,12 +16,6 @@ Of particular importance are the ``accessor``s, which provide a convenient way t
 However, note that cl-gltf makes no assumptions about a math library or anything of the sort, so by default it will parse the data out to vectors of the respective element type (usually floats). That buffer will also be shared between ``elt`` calls to avoid excessive consing. Thus, if you are just copying the data out of the buffers to another place, this should be ideal.
 
 However, if you would like to customise the way the data is read out, such as to convert it into other structures automatically, you can do so. Either set the ``element-reader`` function on the accessor, or provide a specialised method on the ``construct-element-reader`` function. See the respective docstrings for more info.
-
-## To Do
-The following are still left to do:
-
-- Direct support of the ratified extensions
-- Writing files
 
 ## Supported Extensions
 The following official extension specs are explicitly supported:
