@@ -163,6 +163,6 @@
 (defmethod serialize-to ((type (eql 'mesh-attributes)) value)
   (let ((table (make-hash-table :test 'equal)))
     (maphash (lambda (k v)
-               (setf (gethash (string-downcase k) table) (idx v)))
+               (setf (gethash (string k) table) (idx v)))
              value)
     table))

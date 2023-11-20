@@ -16,6 +16,7 @@
                          for element = (aref result i)
                          do (when (typep element 'indexed-element)
                               (setf (idx element) i)))))))))
+    ;; FIXME: this *sucks* can we put this into define-element somehow instead?
     (val 'buffers "buffers" 'buffer)
     (val 'buffer-views "bufferViews" 'buffer-view)
     (val 'accessors "accessors" 'accessor)
@@ -37,6 +38,8 @@
     (val 'skins "skins" 'skin)
     (val 'animations "animations" 'animation)
     (val 'scenes "scenes" 'scene)
+    (setf (scene gltf) (resolve (gethash "scene" json) 'scenes gltf))
+    (setf (extensions-used gltf) (gethash "extensionsUsed" json))
     ;; Tie up crap.
     (loop for node across (nodes gltf)
           for children = (children node)
