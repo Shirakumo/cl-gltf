@@ -89,14 +89,16 @@
 
 (defun set-table (table k v)
   (let ((existing (gethash k table)))
-    (etypecase existing
-      (null
-       (setf (gethash k table) v))
-      (hash-table
-       (when v
-         (loop for key being the hash-keys of v using (hash-value value)
-               do (setf (gethash key existing) value)))
-       existing))))
+    (cond ((or (null v) (and (vectorp v) (= 0 (length v))))
+           v)
+          (T
+           (etypecase existing
+             (null
+              (setf (gethash k table) v))
+             (hash-table
+              (loop for key being the hash-keys of v using (hash-value value)
+                    do (setf (gethash key existing) value))
+              existing))))))
 
 (defmacro define-element (name superclasses slots &rest options)
   (let* ((slots (loop for slot in slots collect (apply #'normalize-slotdef (if (listp slot) slot (list slot)))))

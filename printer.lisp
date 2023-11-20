@@ -1,5 +1,9 @@
 (in-package #:org.shirakumo.fraf.gltf)
 
+(defun update-asset-generator (gltf)
+  (setf (generator (asset gltf))
+        (format NIL "cl-gltf v~a" #.(asdf:component-version (asdf:find-system :cl-gltf)))))
+
 (defun merge-buffers (gltf)
   (when (< 1 (length (buffers gltf)))
     (let* ((data (static-vectors:make-static-vector
@@ -73,22 +77,33 @@
 (defun to-json (thing output)
   (com.inuoe.jzon:stringify (to-table thing NIL) :stream output))
 
-(defun serialize (gltf file &key (if-exists :supersede))
+(defun write-buffer (buffer stream)
+  (typecase stream
+    #+sbcl
+    (sb-sys:fd-stream
+     (finish-output stream)
+     (sb-posix:write (sb-sys:fd-stream-fd stream) (start buffer) (byte-length buffer)))
+    (T
+     (write-sequence buffer stream))))
+
+(defun serialize (gltf file &rest args &key (if-exists :supersede) (update-asset-generator T))
   (etypecase file
     (string
-     (serialize gltf (pathname file)))
+     (apply #'serialize gltf (pathname file) args))
     (pathname
      (cond ((string-equal "glb" (pathname-type file))
             (with-open-file (stream file :direction :output
                                          :element-type '(unsigned-byte 8)
                                          :if-exists if-exists)
-              (serialize gltf stream)))
+              (apply #'serialize gltf stream args)))
            (T
             (with-open-file (stream file :direction :output
                                          :element-type 'character
                                          :if-exists if-exists)
-              (serialize gltf stream)))))
+              (apply #'serialize gltf stream args)))))
     (stream
+     (when update-asset-generator
+       (update-asset-generator gltf))
      (cond ((equal '(unsigned-byte 8) (stream-element-type file))
             (merge-buffers gltf)
             ;; Header
@@ -107,8 +122,7 @@
                 (lisp-buffer
                  (write-sequence (buffer buf) file))
                 (buffer
-                 ;; FFI? How to get the stream FD?
-                 (write-sequence buf file)))))
+                 (write-buffer buf file)))))
            ((equal 'character (stream-element-type file))
             (dolist (buffer (buffers gltf))
               (etypecase buffer
@@ -120,12 +134,12 @@
                                          :if-exists if-exists)
                    (write-sequence (buffer buffer) stream)))
                 (buffer
-                 ;; FFI?
                  (with-open-file (stream (merge-pathnames (uri buffer) file)
                                          :direction :output
                                          :element-type '(unsigned-byte 8)
                                          :if-exists if-exists)
-                   (write-sequence buffer stream)))))
+                   (write-buffer buffer stream)))))
             (to-json gltf file))
            (T
-            (error "Can't write to a stream with element type other than CHARACTER or (UNSIGNED-BYTE 8)."))))))
+            (error "Can't write to a stream with element type other than CHARACTER or (UNSIGNED-BYTE 8).")))))
+  file)
