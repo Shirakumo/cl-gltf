@@ -241,4 +241,7 @@
   ;; parser.lisp
   (:export
    #:parse
-   #:with-gltf))
+   #:with-gltf)
+  ;; printer.lisp
+  (:export
+   #:serialize))
