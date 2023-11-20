@@ -244,4 +244,7 @@
    #:with-gltf)
   ;; printer.lisp
   (:export
+   #:merge-buffers
+   #:normalize-buffers
+   #:urlify-buffers
    #:serialize))

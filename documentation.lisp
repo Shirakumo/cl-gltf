@@ -1033,3 +1033,58 @@ from the body.
 
 See PARSE
 See GLTF (type)"))
+
+;; printer.lisp
+(docs:define-docs
+  (function merge-buffers
+    "Reduces buffers to a single STATIC-BUFFERS.
+
+If the glTF already has no or a single buffer, no changes are made.
+Otherwise buffers are merged to one and all buffer views are adjusted
+to point to the new buffer.
+
+Returns the modified glTF.
+
+See SERIALIZE")
+
+  (function normalize-buffers
+    "Turns every buffer into an in-memory STATIC-BUFFER.
+
+Returns the modified glTF.
+
+See STATIC-BUFFER
+See SERIALIZE")
+
+  (function urlify-buffers
+    "Turns every buffer into a URI-BUFFER with Base64 encoding.
+
+Returns the modified glTF.
+
+See URI-BUFFER
+See SERIALIZE")
+  
+  (function serialize
+    "Serialize a glTF object to a file.
+
+This function can serialize glTF files both in textual glTF format
+with external buffers, glTF format with embedded buffers, and GLB
+binary format to files and file streams.
+
+NOTE: when serialising a file with multiple buffers to a GLB file,
+this function will call MERGE-BUFFERS for you, which modifies the glTF
+structure.
+
+You may want to call one of NORMALIZE-BUFFERS, MERGE-BUFFERS,
+URLIFY-BUFFERS prior to calling SERIALIZE to consolidate the buffers
+to suit the format you want. For instance, if you want to create a
+single text JSON file, you should use URLIFY-BUFFERS. If you want to
+create a single JSON+DATA file, you should call MERGE-BUFFERS. If you
+want to avoid having any data stored in the JSON, you should call
+NORMALIZE-BUFFERS.
+
+If UPDATE-ASSET-GENERATOR is true, the GENERATOR field in the ASSET of
+the glTF is updated to reflect this library as the generator.
+
+See MERGE-BUFFERS
+See NORMALIZE-BUFFERS
+See URLIFY-BUFFERS"))
