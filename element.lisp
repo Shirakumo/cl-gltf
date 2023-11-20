@@ -88,10 +88,17 @@
     (handle (if (listp name) (reverse name) (list name)))))
 
 (defun set-table (table k v)
-  (let ((existing (gethash k table)))
-    (cond ((or (null v) (and (vectorp v) (= 0 (length v))))
-           v)
-          (T
+  (cond ((or (null v) (and (vectorp v) (= 0 (length v))))
+         v)
+        (T
+         (etypecase k
+           (string)
+           (cons
+            (loop for (key . rest) on k
+                  while rest
+                  do (setf table (set-table table key (make-hash-table :test 'equal)))
+                  finally (setf k key))))
+         (let ((existing (gethash k table)))
            (etypecase existing
              (null
               (setf (gethash k table) v))
@@ -128,27 +135,17 @@
            result))
 
        (defmethod to-table progn ((type ,name) (table hash-table))
-         (labels ((entry (k v)
-                    (etypecase k
-                      (string
-                       (set-table table k v))
-                      (cons
-                       (loop with tab = table
-                             for (key . rest) on k
-                             do (if rest
-                                    (setf tab (set-table tab key (make-hash-table :test 'equal)))
-                                    (set-table tab key v)))))))
-           (declare (ignorable #'entry))
-           ,@(loop for (slot . args) in slots
-                   when (getf args :name)
-                   collect `(entry ',(getf args :name)
-                                   ,(destructuring-bind (&key ref parse &allow-other-keys) args
-                                      (cond (ref
-                                             `(unresolve (slot-value type ',slot)))
-                                            (parse
-                                             `(serialize-to ',parse (slot-value type ',slot)))
-                                            (T
-                                             `(slot-value type ',slot))))))))
+         ,@(loop for (slot . args) in slots
+                 when (getf args :name)
+                 collect `(set-table table
+                                     ',(getf args :name)
+                                     ,(destructuring-bind (&key ref parse &allow-other-keys) args
+                                        (cond (ref
+                                               `(unresolve (slot-value type ',slot)))
+                                              (parse
+                                               `(serialize-to ',parse (slot-value type ',slot)))
+                                              (T
+                                               `(slot-value type ',slot)))))))
 
        (defmethod describe-object ((type ,name) stream)
          (format stream "~va~a" (* 2 *describe-indent*) "" (type-of type))
