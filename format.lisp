@@ -41,6 +41,7 @@
    (nodes :initform #() :parse node)
    (animations :initform #() :parse animation)
    (scenes :initform #() :parse scene)
+   (extensions-used :initform #())
    (lights :initform #() :parse light :name ("extensions" "KHR_lights_punctual"))
    (image-lights :initform #() :parse image-light :name ("extensions" "EXT_lights_image_based"))
    (articulations :initform #() :parse articulation :name ("extensions" "AGI_articulations"))

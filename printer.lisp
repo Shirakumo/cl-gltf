@@ -7,10 +7,10 @@
 (defun merge-buffers (gltf)
   (when (< 1 (length (buffers gltf)))
     (let* ((data (static-vectors:make-static-vector
-                 (loop for buffer across (buffers gltf)
-                       maximize (byte-length buffer))))
+                  (loop for buffer across (buffers gltf)
+                        maximize (byte-length buffer))))
            (ptr (static-vectors:static-vector-pointer data))
-           (new-buffer (make-instance 'static-buffer :idx 0 :gltf gltf :buffer data :byte-length (length data))))
+           (new-buffer (make-instance 'static-buffer :idx 0 :gltf gltf :buffer data :start 0 :byte-length (length data))))
       ;; Copy all the buffer data into one array and "normalize" each buffer into an
       ;; offset into the one data array.
       (loop for buffer across (buffers gltf)
@@ -107,17 +107,23 @@
        (update-asset-generator gltf))
      (cond ((equal '(unsigned-byte 8) (stream-element-type file))
             (merge-buffers gltf)
-            ;; Header
-            (nibbles:write-ub32/le #x46546C67 file)
-            (nibbles:write-ub32/le 2 file)
-            ;; JSON block
-            (let ((str (babel:string-to-octets (to-json gltf NIL))))
-              (nibbles:write-ub32/le (length str) file)
-              (nibbles:write-ub32/le #x4E4F534A file)
-              (write-sequence str file))
-            ;; BIN block
-            ;; FIXME: buffer offsets in the json part
-            (let ((buf (aref (buffers gltf) 0)))
+            (let ((buf (aref (buffers gltf) 0))
+                  (str (babel:string-to-octets (to-json gltf NIL))))
+              ;; Header
+              (nibbles:write-ub32/le #x46546C67 file)
+              (nibbles:write-ub32/le 2 file)
+              (nibbles:write-ub32/le (+ (+ 4 4 4) ; header
+                                        (+ 4 4 (length str)) ; str block
+                                        (+ 4 4 (length buf))) ; buf block
+                                     file)
+              ;; JSON block
+              (let ((start (start buf)))
+                (setf (slot-value buf 'start) NIL)
+                (nibbles:write-ub32/le (length str) file)
+                (nibbles:write-ub32/le #x4E4F534A file)
+                (write-sequence str file)
+                (setf (slot-value buf 'start) start))
+              ;; BIN block
               (nibbles:write-ub32/le (byte-length buf) file)
               (nibbles:write-ub32/le #x004E4942 file)
               (etypecase buf

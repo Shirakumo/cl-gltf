@@ -144,7 +144,7 @@
     (:uint64 5135)
     (:float 5126)
     (:double 5130)
-    (T (string-downcase value))))
+    (T (string value))))
 
 (defmethod parse-from ((json string) (type (eql 'keyword)) gltf)
   (intern (string-upcase json) "KEYWORD"))
