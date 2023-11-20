@@ -80,9 +80,9 @@
 (defun write-buffer (buffer stream)
   (typecase stream
     #+sbcl
-    (sb-sys:fd-stream
+    (file-stream
      (finish-output stream)
-     (sb-posix:write (sb-sys:fd-stream-fd stream) (start buffer) (byte-length buffer)))
+     (sb-posix:write (sb-posix:file-descriptor stream) (start buffer) (byte-length buffer)))
     (T
      (write-sequence buffer stream))))
 
