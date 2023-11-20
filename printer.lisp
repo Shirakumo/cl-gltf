@@ -103,6 +103,7 @@
               (apply #'serialize gltf stream args)))))
     (stream
      (when update-asset-generator
+       (setf (uri gltf) (pathname file))
        (update-asset-generator gltf))
      (cond ((equal '(unsigned-byte 8) (stream-element-type file))
             (merge-buffers gltf)
@@ -115,6 +116,7 @@
               (nibbles:write-ub32/le #x4E4F534A file)
               (write-sequence str file))
             ;; BIN block
+            ;; FIXME: buffer offsets in the json part
             (let ((buf (aref (buffers gltf) 0)))
               (nibbles:write-ub32/le (byte-length buf) file)
               (nibbles:write-ub32/le #x004E4942 file)
@@ -124,21 +126,21 @@
                 (buffer
                  (write-buffer buf file)))))
            ((equal 'character (stream-element-type file))
-            (dolist (buffer (buffers gltf))
-              (etypecase buffer
-                (uri-buffer)
-                (lisp-buffer
-                 (with-open-file (stream (merge-pathnames (uri buffer) file)
-                                         :direction :output
-                                         :element-type '(unsigned-byte 8)
-                                         :if-exists if-exists)
-                   (write-sequence (buffer buffer) stream)))
-                (buffer
-                 (with-open-file (stream (merge-pathnames (uri buffer) file)
-                                         :direction :output
-                                         :element-type '(unsigned-byte 8)
-                                         :if-exists if-exists)
-                   (write-buffer buffer stream)))))
+            (loop for buffer across (buffers gltf)
+                  do (etypecase buffer
+                       (uri-buffer)
+                       (lisp-buffer
+                        (with-open-file (stream (merge-pathnames (uri buffer) file)
+                                                :direction :output
+                                                :element-type '(unsigned-byte 8)
+                                                :if-exists if-exists)
+                          (write-sequence (buffer buffer) stream)))
+                       (buffer
+                        (with-open-file (stream (merge-pathnames (uri buffer) file)
+                                                :direction :output
+                                                :element-type '(unsigned-byte 8)
+                                                :if-exists if-exists)
+                          (write-buffer buffer stream)))))
             (to-json gltf file))
            (T
             (error "Can't write to a stream with element type other than CHARACTER or (UNSIGNED-BYTE 8).")))))
