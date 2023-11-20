@@ -12,6 +12,7 @@
                (:file "element")
                (:file "format")
                (:file "accessor")
+               (:file "translations")
                (:file "parser")
                (:file "printer")
                (:file "documentation"))
