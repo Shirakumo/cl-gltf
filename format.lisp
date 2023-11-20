@@ -94,7 +94,7 @@
    weights))
 
 (define-element camera (named-element indexed-element)
-  ())
+  ((kind :parse :keyword :name "type")))
 
 (define-element orthographic-camera (camera)
   ((xmag :name ("orthographic" "xmag"))
@@ -210,7 +210,7 @@
    initial-value))
 
 (define-element shape (indexed-element)
-  ())
+  ((kind :parse :keyword :name "type")))
 
 (define-element box-shape (shape)
   ((size :initform #(1.0 1.0 1.0) :name ("box" "size"))))
