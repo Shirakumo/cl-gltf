@@ -13,8 +13,8 @@
            (new-buffer (make-instance 'static-buffer :idx 0 :gltf gltf :buffer data :start 0 :byte-length (length data))))
       ;; Copy all the buffer data into one array and "normalize" each buffer into an
       ;; offset into the one data array.
-      (loop for buffer across (buffers gltf)
-            for start = 0
+      (loop with start = 0
+            for buffer across (buffers gltf)
             do (etypecase buffer
                  (static-buffer
                   (static-vectors:replace-foreign-memory
