@@ -31,7 +31,9 @@
   (map 'vector (lambda (json) (parse-from json type gltf)) array))
 
 (defmethod serialize-to (type (array vector))
-  (map 'vector (lambda (value) (serialize-to type value)) array))
+  (if (stringp array)
+      array
+      (map 'vector (lambda (value) (serialize-to type value)) array)))
 
 (defmethod parse-from ((string string) type gltf)
   string)

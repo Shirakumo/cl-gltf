@@ -78,7 +78,7 @@
 
 (defun make-simple-view (gltf buffer-data &rest initargs)
   (let* ((data (static-vectors:make-static-vector (* (length buffer-data) (component-type-bytes (element-type-component-type (array-element-type buffer-data))))))
-         (buffer (make-indexed 'static-buffer gltf :buffer buffer-data :byte-length (length data))))
+         (buffer (make-indexed 'static-buffer gltf :buffer data :byte-length (length data))))
     (cffi:with-pointer-to-vector-data (ptr buffer-data)
       (static-vectors:replace-foreign-memory 
        (static-vectors:static-vector-pointer data)
