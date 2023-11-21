@@ -114,7 +114,7 @@
          (setf (byte-length buffer) byte-length))
         ((uri buffer)
          (change-class buffer 'mmap-buffer))
-        (T
+        ((not (slot-boundp buffer 'start))
          (error "Invalid buffer spec: neither URI nor START were supplied."))))
 
 (defmethod close ((buffer buffer) &key abort)
@@ -145,12 +145,22 @@
 (defclass static-buffer (lisp-buffer)
   ())
 
+(defmethod initialize-instance ((buffer static-buffer) &key)
+  (call-next-method)
+  (when (and (slot-boundp buffer 'buffer)
+             (not (slot-boundp buffer 'start)))
+    (setf (slot-value buffer 'start) (static-vectors:static-vector-pointer (buffer buffer)))))
+
 (defmethod close ((buffer static-buffer) &key abort)
   (declare (ignore abort))
   (when (slot-boundp buffer 'buffer)
     (static-vectors:free-static-vector (buffer buffer))
     (slot-makunbound buffer 'start)
     (slot-makunbound buffer 'buffer)))
+
+(defmethod update-instance-for-different-class ((old static-buffer) (new buffer) &key)
+  (unless (or (typep new 'static-buffer))
+    (close old)))
 
 (defclass uri-buffer (static-buffer)
   ())
@@ -186,7 +196,7 @@
 
 (define-element buffer-view (indexed-element named-element sequences:sequence)
   ((buffer :ref buffers)
-   (start :name null :reader start)
+   (start :name null :initarg :start :reader start)
    (byte-offset :initform 0)
    (byte-length :reader sequences:length :accessor byte-length)
    (byte-stride)
@@ -211,7 +221,7 @@
    (normalized :initform NIL)
    (maximum :name "max")
    (minimum :name "min")
-   (start :name null :reader start)
+   (start :name null :initarg :start :reader start)
    (byte-stride :name null :reader byte-stride)
    (element-reader :name null :initarg :element-reader :accessor element-reader)
    (element-writer :name null :initarg :element-writer :accessor element-writer)))
