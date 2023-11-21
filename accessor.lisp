@@ -131,6 +131,11 @@
    (buffer :initarg :buffer :name null :reader buffer)
    (byte-length :initarg :byte-length)))
 
+;; FIXME: this won't actually work, as BUFFER-VIEWs expect START to be a FOREIGN-POINTER.
+;;        we can't indefinitely pin a vector to get its pointer either, so I'm not sure
+;;        how to approach this correctly. Dispatching different views and accessors to
+;;        fix that is pretty bad, though....
+
 (defmethod sequences:elt ((buffer lisp-buffer) i)
   (aref (buffer buffer) (+ i (start buffer))))
 
