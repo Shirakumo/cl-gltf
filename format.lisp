@@ -63,44 +63,6 @@
     (apply #'mmap:munmap (%mmap gltf))
     (setf (%mmap gltf) NIL)))
 
-(defun type-slot (type)
-  (ecase type
-    (buffer 'buffers)
-    (buffer-view 'buffer-views)
-    (accessor 'accessors)
-    (camera 'cameras)
-    (mesh 'meshes)
-    (image 'images)
-    (sampler 'samplers)
-    (material 'materials)
-    (skin 'skins)
-    (node 'nodes)
-    (animation 'animations)
-    (scene 'scenes)
-    (light 'lights)
-    (image-light 'image-lights)
-    (articulation 'articulations)
-    (shape 'shapes)
-    (physics-material 'physics-materials)
-    (physics-joint-limit 'physics-joint-limits)
-    (collision-filter 'collision-filters)))
-
-(defun push* (element sequence)
-  (etypecase sequence
-    (list (list* element sequence))
-    (vector (if (adjustable-array-p sequence)
-                (vector-push-extend element sequence)
-                (let ((arr (make-array (1+ (length sequence)) :adjustable T :fill-pointer T)))
-                  (replace arr sequence)
-                  (setf (aref arr (length sequence)) element)
-                  arr)))))
-
-(defun make-indexed (type element &rest initargs)
-  (let* ((gltf (gltf element))
-         (obj (apply #'make-instance type :gltf gltf :idx (length (slot-value gltf (type-slot type))) initargs)))
-    (setf (slot-value gltf (type-slot type)) (push* obj (slot-value gltf (type-slot type))))
-    obj))
-
 (define-element asset (gltf-element)
   (copyright
    generator
@@ -151,8 +113,8 @@
    weights))
 
 (define-element mesh-primitive (gltf-element)
-  ((attributes :initform #() :parse mesh-attributes)
-   (indices :initform #() :ref accessors)
+  ((attributes :initform (make-hash-table :test 'eql) :parse mesh-attributes)
+   (indices :initform NIL :ref accessors)
    (material :ref materials)
    (mode :initform :triangles :parse primitive-mode)
    targets))

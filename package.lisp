@@ -28,6 +28,11 @@
    #:byte-stride
    #:element-reader
    #:element-writer)
+  ;; construction.lisp
+  (:export
+   #:make-indexed
+   #:make-simple-view
+   #:make-mesh-primitive)
   ;; format.lisp
   (:export
    #:gltf-element
@@ -59,7 +64,6 @@
    #:lights
    #:image-lights
    #:articulations
-   #:make-indexed
    #:asset
    #:copyright
    #:generator
