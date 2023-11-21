@@ -8,7 +8,7 @@
   (when (< 1 (length (buffers gltf)))
     (let* ((data (static-vectors:make-static-vector
                   (loop for buffer across (buffers gltf)
-                        maximize (byte-length buffer))))
+                        sum (byte-length buffer))))
            (ptr (static-vectors:static-vector-pointer data))
            (new-buffer (make-instance 'static-buffer :idx 0 :gltf gltf :buffer data :start 0 :byte-length (length data))))
       ;; Copy all the buffer data into one array and "normalize" each buffer into an
