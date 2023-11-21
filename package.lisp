@@ -59,6 +59,7 @@
    #:lights
    #:image-lights
    #:articulations
+   #:make-indexed
    #:asset
    #:copyright
    #:generator
