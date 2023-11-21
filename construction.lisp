@@ -2,10 +2,10 @@
 
 (defun type-slot (type)
   (ecase type
-    (buffer 'buffers)
+    ((buffer lisp-buffer static-buffer uri-buffer mmap-buffer) 'buffers)
     (buffer-view 'buffer-views)
     (accessor 'accessors)
-    (camera 'cameras)
+    ((camera orthographic-camera perspective-camera) 'cameras)
     (mesh 'meshes)
     (image 'images)
     (sampler 'samplers)
@@ -17,7 +17,7 @@
     (light 'lights)
     (image-light 'image-lights)
     (articulation 'articulations)
-    (shape 'shapes)
+    ((shape box-shape sphere-shape cylinder-shape capsule-shape trimesh-shape convex-shape) 'shapes)
     (physics-material 'physics-materials)
     (physics-joint-limit 'physics-joint-limits)
     (collision-filter 'collision-filters)))
@@ -39,7 +39,7 @@
     obj))
 
 (defun make-simple-view (gltf buffer-data &rest initargs)
-  (let ((buffer (make-indexed 'lisp-buffer gltf :buffer buffer-data :byte-length (length buffer-data))))
+  (let ((buffer (make-indexed 'lisp-buffer gltf :buffer buffer-data :start 0 :byte-length (length buffer-data))))
     (apply #'make-indexed 'buffer-view gltf :buffer buffer :byte-length (byte-length buffer) initargs)))
 
 (defun vertex-attribute-element-type (attribute)
