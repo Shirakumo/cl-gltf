@@ -30,6 +30,7 @@
    #:element-writer)
   ;; construction.lisp
   (:export
+   #:push-child
    #:make-indexed
    #:make-simple-view
    #:make-mesh-primitive)

@@ -19,7 +19,7 @@
                  (static-buffer
                   (static-vectors:replace-foreign-memory
                    (cffi:inc-pointer ptr start)
-                   (cffi:inc-pointer (static-vectors:static-vector-pointer (buffer buffer)) (start buffer))
+                   (start buffer)
                    (byte-length buffer)))
                  (lisp-buffer
                   (replace data (buffer buffer) :start1 start :start2 (start buffer)))

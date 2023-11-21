@@ -148,8 +148,10 @@
 (defmethod initialize-instance ((buffer static-buffer) &key)
   (call-next-method)
   (when (and (slot-boundp buffer 'buffer)
-             (not (slot-boundp buffer 'start)))
-    (setf (slot-value buffer 'start) (static-vectors:static-vector-pointer (buffer buffer)))))
+             (not (typep (start buffer) 'cffi:foreign-pointer)))
+    (setf (slot-value buffer 'start)
+          (cffi:inc-pointer (static-vectors:static-vector-pointer (buffer buffer))
+                            (start buffer)))))
 
 (defmethod close ((buffer static-buffer) &key abort)
   (declare (ignore abort))
