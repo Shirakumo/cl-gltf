@@ -31,11 +31,12 @@
   (map 'vector (lambda (json) (parse-from json type gltf)) array))
 
 (defmethod serialize-to (type (array vector))
-  (if (stringp array)
-      array
-      (map 'vector (lambda (value) (serialize-to type value)) array)))
+  (map 'vector (lambda (value) (serialize-to type value)) array))
 
 (defmethod parse-from ((string string) type gltf)
+  string)
+
+(defmethod serialize-to (type (string string))
   string)
 
 (defmethod parse-from (json (type symbol) gltf)

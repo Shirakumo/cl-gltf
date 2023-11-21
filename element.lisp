@@ -32,12 +32,13 @@
                    (T
                     (write-char (char-downcase char) out))))))
 
-(defun normalize-slotdef (slot &rest args &key name ref parse initarg initform accessor reader writer)
+(defun normalize-slotdef (slot &rest args &key name ref ref* parse initarg initform accessor reader writer)
   (if (eql name 'null)
       (list* slot (removef args :name))
       (list* slot
              :name (or name (to-json-name slot))
              :ref ref
+             :ref* ref*
              :parse parse
              :initarg (or initarg (intern (string slot) "KEYWORD"))
              :initform initform
@@ -114,7 +115,7 @@
     `(progn
        (defclass ,name ,superclasses
          ,(loop for (slot . args) in slots
-                collect (list* slot (removef args :name :ref :parse)))
+                collect (list* slot (removef args :name :ref :ref* :parse)))
          ,@options)
 
        (defmethod initargs append ((type ,name) json gltf)
@@ -139,8 +140,8 @@
                  when (getf args :name)
                  collect `(set-table table
                                      ',(getf args :name)
-                                     ,(destructuring-bind (&key ref parse &allow-other-keys) args
-                                        (cond (ref
+                                     ,(destructuring-bind (&key ref ref* parse &allow-other-keys) args
+                                        (cond ((or ref ref*)
                                                `(unresolve (slot-value type ',slot)))
                                               (parse
                                                `(serialize-to ',parse (slot-value type ',slot)))

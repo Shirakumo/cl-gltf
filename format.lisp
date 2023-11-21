@@ -76,7 +76,7 @@
 (define-element node (named-element indexed-element)
   ((camera :ref cameras)
    (parent :name null :initform NIL :accessor parent)
-   (children :initform #())
+   (children :initform #() :ref* nodes)
    (lights :initform #() :ref lights :name ("extensions" "KHR_lights_punctual"))
    (articulations :initform #() :ref articulations :name ("extensions" "AGI_articulations" "articulationName"))
    (lods :initform #() :ref nodes :name ("extensions" "MSFT_lod" "ids"))
@@ -85,7 +85,7 @@
    (rigidbody :initform NIL :parse rigidbody :name ("extensions" "KHR_rigid_bodies" "motion"))
    (trigger :initform NIL :parse trigger :name ("extensions" "KHR_rigid_bodies" "trigger"))
    (physics-joint :initform NIL :parse physics-joint :name ("extensions" "KHR_rigid_bodies" "joint"))
-   skin
+   (skin :ref* skins)
    (mesh :ref meshes)
    matrix
    rotation
