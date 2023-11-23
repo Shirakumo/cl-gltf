@@ -24,5 +24,6 @@
                :cffi
                :qbase64
                :nibbles
-               :static-vectors)
+               :static-vectors
+               (:feature :sbcl (:require :sb-posix)))
   :in-order-to ((asdf:test-op (asdf:test-op :cl-gltf-test))))
