@@ -86,7 +86,7 @@
    #:children
    #:skin
    #:mesh
-   #:lights
+   #:light
    #:articulations
    #:shapes
    #:physics-materials

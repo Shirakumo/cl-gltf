@@ -27,7 +27,7 @@
     (val 'textures "textures" 'texture)
     (val 'materials "materials" 'material)
     (val 'meshes "meshes" 'mesh)
-    (val 'lights '("extensions" "KHR_lights_punctual") 'light)
+    (val 'lights '("extensions" "KHR_lights_punctual" "lights") 'light)
     (val 'image-lights '("extensions" "EXT_lights_image_based") 'image-light)
     (val 'articulations '("extensions" "AGI_articulations") 'articulation)
     (val 'shapes '("extensions" "KHR_collision_shapes" "shapes") 'shape)
