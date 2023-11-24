@@ -77,7 +77,7 @@
   ((camera :ref cameras)
    (parent :name null :initform NIL :accessor parent)
    (children :initform #() :ref* nodes)
-   (light :initform #() :ref lights :name ("extensions" "KHR_lights_punctual" "light"))
+   (light :initform NIL :ref lights :name ("extensions" "KHR_lights_punctual" "light"))
    (articulations :initform #() :ref articulations :name ("extensions" "AGI_articulations" "articulationName"))
    (lods :initform #() :ref nodes :name ("extensions" "MSFT_lod" "ids"))
    (lod-screen-coverage :initform #() :name ("extras" "MSFT_screencoverage"))
@@ -186,8 +186,16 @@
 (define-element light (indexed-element named-element gltf-element)
   ((kind :parse :keyword :name "type")
    (color :initform #(1.0 1.0 1.0))
-   (intensity :initform 1.0)
-   (range :initform NIL)
+   (intensity :initform 1.0)))
+
+(define-element directional-light (light)
+  ())
+
+(define-element point-light (light)
+  ((range :initform NIL)))
+
+(define-element spot-light (light)
+  ((range :initform NIL)
    (inner-angle :initform 0.0 :name ("spot" "innerConeAngle"))
    (outer-angle :initform (/ PI 4.0) :name ("spot" "outerConeAngle"))))
 

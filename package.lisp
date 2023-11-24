@@ -172,7 +172,10 @@
    #:kind
    #:color
    #:intensity
+   #:directional-light
+   #:point-light
    #:range
+   #:spot-light
    #:inner-angle
    #:outer-angle
    #:image-light

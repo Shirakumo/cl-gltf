@@ -60,6 +60,14 @@
 (defun %parse-from (json type gltf)
   (apply #'make-instance type :gltf gltf (initargs (c2mop:class-prototype (c2mop:ensure-finalized (find-class type))) json gltf)))
 
+(defmethod parse-from (json (type light) gltf)
+  (loop for (field type) in '(("directional" directional-light)
+                              ("point" point-light)
+                              ("spot" spot-light))
+        thereis (when (string-equal field (gethash "type" json))
+                  (%parse-from json type gltf))
+        finally (return (call-next-method))))
+
 (defmethod parse-from (json (type camera) gltf)
   (cond ((gethash "perspective" json)
          (%parse-from json 'perspective-camera gltf))
