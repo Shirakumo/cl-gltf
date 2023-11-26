@@ -41,6 +41,7 @@
     (val 'scenes "scenes" 'scene)
     (setf (scene gltf) (resolve (gethash "scene" json) 'scenes gltf))
     (setf (extensions-used gltf) (gethash "extensionsUsed" json))
+    (setf (extensions-required gltf) (gethash "extensionsRequired" json))
     ;; Tie up crap.
     (loop for node across (nodes gltf)
           for children = (children node)
