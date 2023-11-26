@@ -103,7 +103,7 @@
               (apply #'serialize gltf stream args)))))
     (stream
      (when update-asset-generator
-       (setf (uri gltf) (pathname file))
+       (setf (uri gltf) NIL)
        (update-asset-generator gltf))
      (cond ((equal '(unsigned-byte 8) (stream-element-type file))
             (merge-buffers gltf)

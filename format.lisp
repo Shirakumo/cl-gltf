@@ -30,7 +30,7 @@
    (buffers :initform #() :parse buffer)
    (buffer-views :initform #() :parse buffer-view)
    (accessors :initform #() :parse accessor)
-   (asset :parse asset)
+   (asset :initform (make-instance 'asset) :parse asset)
    (cameras :initform #() :parse camera)
    (meshes :initform #() :parse mesh)
    (images :initform #() :parse image)
