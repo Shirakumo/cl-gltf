@@ -101,12 +101,12 @@
                                                 :component-type component-type
                                                 :element-type (vertex-attribute-element-type attribute)
                                                 :byte-offset start :size vertex-count)))
-    (apply #'make-instance 'mesh-primitive 
+    (apply #'make-instance 'mesh-primitive
            :attributes attributes
            :indices (when face-indices
                       (make-indexed 'accessor gltf :buffer-view face-buffer
                                                    :component-type (element-type-component-type (array-element-type face-indices))
                                                    :element-type :scalar
-                                                   :size (length face-buffer)))
+                                                   :size (length face-indices)))
            :gltf (gltf gltf)
            args)))
