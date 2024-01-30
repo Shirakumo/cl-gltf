@@ -33,7 +33,8 @@
    #:push-child
    #:make-indexed
    #:make-simple-view
-   #:make-mesh-primitive)
+   #:make-mesh-primitive
+   #:extra)
   ;; format.lisp
   (:export
    #:gltf-element

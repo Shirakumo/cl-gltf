@@ -110,3 +110,16 @@
                                                    :size (length face-indices)))
            :gltf (gltf gltf)
            args)))
+
+(defun extra (name node &optional default)
+  (let ((extras (extras node)))
+    (if extras
+        (gethash name extras default)
+        default)))
+
+(defun (setf extra) (value name node &optional default)
+  (declare (ignore default))
+  (let ((extras (extras node)))
+    (unless extras
+      (setf extras (setf (extras node) (make-hash-table :test 'equal))))
+    (setf (gethash name extras) value)))
