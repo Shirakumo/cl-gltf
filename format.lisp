@@ -105,7 +105,7 @@
 
 (define-element perspective-camera (camera)
   ((aspect-ratio :name ("perspective" "aspectRatio"))
-   (fov :name ("perspective" "fov"))
+   (fov :name ("perspective" "yfov"))
    (zfar :name ("perspective" "zfar"))
    (znear :name ("perspective" "znear"))))
 
