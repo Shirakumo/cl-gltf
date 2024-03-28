@@ -174,8 +174,12 @@
 (define-element texture-info (gltf-element)
   ((texture :name "index" :ref textures)
    (tex-coord :initform 0)
+   (strength :initform 1.0)
    (scale :initform 1.0)
-   (strength :initform 1.0)))
+   (scale2 :initform #(0.0 0.0) :name ("extensions" "KHR_texture_transform" "scale"))
+   (offset :initform #(0.0 0.0) :name ("extensions" "KHR_texture_transform" "offset"))
+   (rotation :initform 0.0 :name ("extensions" "KHR_texture_transform" "rotation"))
+   (tex-coord2 :initform NIL :name ("extensions" "KHR_texture_transform" "texCoord"))))
 
 (define-element pbr (gltf-element)
   ((albedo :parse texture-info :name "baseColorTexture")

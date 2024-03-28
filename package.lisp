@@ -163,6 +163,10 @@
    #:tex-coord
    #:scale
    #:strength
+   #:offset
+   #:rotation
+   #:scale2
+   #:tex-coord2
    #:pbr
    #:albedo
    #:albedo-factor
