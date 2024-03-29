@@ -139,6 +139,7 @@
    #:animation-channel-target
    #:node
    #:path
+   #:pointer
    #:animation-sampler
    #:input
    #:output

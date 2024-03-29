@@ -145,7 +145,8 @@
 
 (define-element animation-channel-target (gltf-element)
   ((node :ref nodes)
-   (path :parse keyword)))
+   (path :parse keyword)
+   (pointer :parse json-pointer :name ("extensions" "KHR_animation_pointer" "pointer"))))
 
 (define-element animation-sampler (gltf-element)
   ((input :ref accessors)

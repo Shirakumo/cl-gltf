@@ -177,3 +177,49 @@
                (setf (gethash (string k) table) (idx v)))
              value)
     table))
+
+(defun split (split string)
+  (let ((parts ()) (buffer (make-string-output-stream)))
+    (flet ((maybe-output ()
+             (let ((part (get-output-stream-string buffer)))
+               (when (string/= part "") (push part parts)))))
+      (loop for char across string
+            do (if (char= char split)
+                   (maybe-output)
+                   (write-char char buffer))
+            finally (maybe-output))
+      (nreverse parts))))
+
+(defmethod parse-from ((json string) (type (eql 'json-pointer)) gltf)
+  (let ((parts (split #\/ json))
+        (object gltf))
+    (loop for part = (pop parts)
+          for next = (etypecase object
+                       (gltf-element (slot-value-by-json object part))
+                       (sequence (elt object part)))
+          do (typecase next
+               (gltf-element
+                (setf object next))
+               (sequence
+                (if (and (< 0 (length next)) (typep (elt next 0) 'gltf-element))
+                    (setf object next)
+                    (return (list* object part parts))))
+               (T
+                (return (list* object part parts))))
+          while parts
+          finally (return object))))
+
+(defmethod serialize-to ((type (eql 'json-pointer)) (value string))
+  value)
+
+(defmethod serialize-to ((type (eql 'json-pointer)) (value cons))
+  (format out "~{~a~^/~}"
+          (loop for part in value
+                collect (etypecase part
+                          (string part)
+                          (integer part)
+                          (symbol (to-json-name part))
+                          (gltf-element (serialize-to type part))))))
+
+(defmethod serialize-to ((type (eql 'json-pointer)) (value gltf-element))
+  value)

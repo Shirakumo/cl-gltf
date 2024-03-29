@@ -148,6 +148,12 @@
                                               (T
                                                `(slot-value type ',slot)))))))
 
+       (defmethod slot-value-by-json ((type ,name) json-name)
+         (cond ,@(loop for (slot . args) in slots
+                       collect `((equal json-name ',(getf args :name))
+                                 (,slot type)))
+               (T (error "Unknown json-name ~s on ~a" json-name type))))
+
        (defmethod describe-object ((type ,name) stream)
          (format stream "~va~a" (* 2 *describe-indent*) "" (type-of type))
          (if (typep type 'indexed-element)
