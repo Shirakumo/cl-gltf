@@ -87,6 +87,16 @@
         thereis (when value (%parse-from json type gltf))
         finally (return (call-next-method))))
 
+(defmethod parse-from (json (type shirakumo-trigger-data) gltf)
+  (cond ((gethash "trigger" json)
+         (%parse-from (gethash "trigger" json) 'shirakumo-trigger gltf))
+        ((gethash "spawner" json)
+         (%parse-from (gethash "spawner" json) 'shirakumo-spawner gltf))
+        ((gethash "killvolume" json)
+         (%parse-from (gethash "killvolume" json) 'shirakumo-killvolume gltf))
+        (T
+         (call-next-method))))
+
 (defmethod parse-from (json (type (eql 'filter)) gltf)
   (ecase json
     (9728 :nearest)

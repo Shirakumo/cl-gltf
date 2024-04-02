@@ -72,7 +72,8 @@
 
 (define-element scene (named-element indexed-element)
   ((nodes :initform #() :ref nodes)
-   (light :initform NIL :ref image-lights :name ("extensions" "EXT_lights_image_based" "light"))))
+   (light :initform NIL :ref image-lights :name ("extensions" "EXT_lights_image_based" "light"))
+   (envmap :initform NIL :name ("extensions" "SHIRAKUMO_trial" "envmap"))))
 
 (define-element node (named-element indexed-element)
   ((camera :ref cameras)
@@ -85,6 +86,7 @@
    (collider :initform NIL :parse collider :name ("extensions" "KHR_physics_rigid_bodies" "collider"))
    (rigidbody :initform NIL :parse rigidbody :name ("extensions" "KHR_physics_rigid_bodies" "motion"))
    (trigger :initform NIL :parse trigger :name ("extensions" "KHR_physics_rigid_bodies" "trigger"))
+   (shirakumo-trigger-data :initform NIL :parse shirakumo-trigger-data :name ("extensions" "SHIRAKUMO_trial"))
    (physics-joint :initform NIL :parse physics-joint :name ("extensions" "KHR_physics_rigid_bodies" "joint"))
    (skin :ref* skins)
    (mesh :ref meshes)
@@ -137,7 +139,11 @@
 
 (define-element animation (named-element indexed-element)
   ((channels :initform #() :parse animation-channel)
-   (samplers :initform #() :parse animation-sampler)))
+   (samplers :initform #() :parse animation-sampler)
+   (root-motion-p :initform NIL :name ("extensions" "SHIRAKUMO_trial" "rootMotion"))
+   (velocity-scale :initform 1.0 :name ("extensions" "SHIRAKUMO_trial" "velocityScale"))
+   (loop-p :initform NIL :name ("extensions" "SHIRAKUMO_trial" "loop"))
+   (next :initform NIL :name ("extensions" "SHIRAKUMO_trial" "next"))))
 
 (define-element animation-channel (gltf-element)
   (sampler
@@ -266,6 +272,21 @@
 (define-element trigger (gltf-element)
   ((shape :ref shapes)
    (collision-filter :ref collision-filters)))
+
+(define-element shirakumo-trigger-data (gltf-element)
+  ())
+
+(define-element shirakumo-trigger (shirakumo-trigger-data)
+  (form))
+
+(define-element shirakumo-spawner (shirakumo-trigger-data)
+  ((spawn)
+   (spawn-count :initform 1)
+   (auto-deactivate-p :initform T :name "autoDeactivate")
+   (respawn-cooldown :initform 0.0)))
+
+(define-element shirakumo-killvolume (shirakumo-trigger-data)
+  (kill))
 
 (define-element physics-material (indexed-element)
   ((static-friction :initform 0.6)

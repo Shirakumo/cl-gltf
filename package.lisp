@@ -80,6 +80,7 @@
    #:shape
    #:rigidbody
    #:trigger
+   #:shirakumo-trigger-data
    #:physics-joint
    #:physics-material
    #:camera
@@ -133,6 +134,10 @@
    #:animation
    #:channels
    #:samplers
+   #:root-motion-p
+   #:velocity-scale
+   #:loop-p
+   #:next
    #:animation-channel
    #:sampler
    #:target
@@ -232,6 +237,16 @@
    #:trigger
    #:shape
    #:collision-filter
+   #:shirakumo-trigger-data
+   #:shirakumo-trigger
+   #:form
+   #:shirakumo-spawner
+   #:spawn
+   #:spawn-count
+   #:auto-deactivate-p
+   #:respawn-cooldown
+   #:shirakumo-killvolume
+   #:kill
    #:physics-material
    #:static-friction
    #:dynamic-friction

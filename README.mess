@@ -27,5 +27,6 @@ The following official extension specs are explicitly supported:
 - KHR_collision_shapes
 - KHR_rigid_bodies
 - KHR_texture_transform
+- SHIRAKUMO_trial
 - MSFT_lod
 - MSFT_packing_occlusionRoughnessMetallic
