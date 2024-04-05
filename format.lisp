@@ -142,7 +142,7 @@
    (samplers :initform #() :parse animation-sampler)
    (root-motion-p :initform NIL :name ("extensions" "SHIRAKUMO_trial" "rootMotion"))
    (velocity-scale :initform 1.0 :name ("extensions" "SHIRAKUMO_trial" "velocityScale"))
-   (loop-p :initform NIL :name ("extensions" "SHIRAKUMO_trial" "loop"))
+   (loop-p :initform T :name ("extensions" "SHIRAKUMO_trial" "loop"))
    (next :initform NIL :name ("extensions" "SHIRAKUMO_trial" "next"))))
 
 (define-element animation-channel (gltf-element)
