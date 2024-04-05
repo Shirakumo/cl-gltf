@@ -274,7 +274,7 @@
    (collision-filter :ref collision-filters)))
 
 (define-element shirakumo-trigger-data (gltf-element)
-  ())
+  ((filter :initform "T")))
 
 (define-element shirakumo-trigger (shirakumo-trigger-data)
   (form))
@@ -287,6 +287,9 @@
 
 (define-element shirakumo-killvolume (shirakumo-trigger-data)
   (kill))
+
+(define-element shirakumo-checkpoint (shirakumo-trigger-data)
+  ((spawn-point :initform #(0.0 0.0 0.0))))
 
 (define-element physics-material (indexed-element)
   ((static-friction :initform 0.6)

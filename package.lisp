@@ -238,6 +238,7 @@
    #:shape
    #:collision-filter
    #:shirakumo-trigger-data
+   #:filter
    #:shirakumo-trigger
    #:form
    #:shirakumo-spawner
@@ -247,6 +248,8 @@
    #:respawn-cooldown
    #:shirakumo-killvolume
    #:kill
+   #:shirakumo-checkpoint
+   #:spawn-point
    #:physics-material
    #:static-friction
    #:dynamic-friction

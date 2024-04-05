@@ -94,6 +94,8 @@
          (%parse-from (gethash "spawner" json) 'shirakumo-spawner gltf))
         ((gethash "killvolume" json)
          (%parse-from (gethash "killvolume" json) 'shirakumo-killvolume gltf))
+        ((gethash "checkpoint" json)
+         (%parse-from (gethash "checkpoint" json) 'shirakumo-checkpoint gltf))
         (T
          (call-next-method))))
 
