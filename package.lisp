@@ -74,6 +74,7 @@
    #:scene
    #:nodes
    #:light
+   #:envmap
    #:node
    #:lods
    #:lod-screen-coverage
