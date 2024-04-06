@@ -88,6 +88,7 @@
    (trigger :initform NIL :parse trigger :name ("extensions" "KHR_physics_rigid_bodies" "trigger"))
    (shirakumo-trigger-data :initform NIL :parse shirakumo-trigger-data :name ("extensions" "SHIRAKUMO_trial"))
    (physics-joint :initform NIL :parse physics-joint :name ("extensions" "KHR_physics_rigid_bodies" "joint"))
+   (virtual-p :initform NIL :name ("extensions" "SHIRAKUMO_trial" "virtual"))
    (skin :ref* skins)
    (mesh :ref meshes)
    matrix

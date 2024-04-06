@@ -83,6 +83,7 @@
    #:trigger
    #:shirakumo-trigger-data
    #:physics-joint
+   #:virtual-p
    #:physics-material
    #:camera
    #:parent
