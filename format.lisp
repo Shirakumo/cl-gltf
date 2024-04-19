@@ -144,7 +144,8 @@
    (root-motion-p :initform NIL :name ("extensions" "SHIRAKUMO_trial" "rootMotion"))
    (velocity-scale :initform 1.0 :name ("extensions" "SHIRAKUMO_trial" "velocityScale"))
    (loop-p :initform T :name ("extensions" "SHIRAKUMO_trial" "loop"))
-   (next :initform NIL :name ("extensions" "SHIRAKUMO_trial" "next"))))
+   (next :initform NIL :name ("extensions" "SHIRAKUMO_trial" "next"))
+   (blend-duration :initform 0.2 :name ("extensions" "SHIRAKUMO_trial" "blendDuration"))))
 
 (define-element animation-channel (gltf-element)
   (sampler

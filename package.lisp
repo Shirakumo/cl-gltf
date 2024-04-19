@@ -140,6 +140,7 @@
    #:velocity-scale
    #:loop-p
    #:next
+   #:blend-duration
    #:animation-channel
    #:sampler
    #:target
