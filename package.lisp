@@ -136,7 +136,7 @@
    #:animation
    #:channels
    #:samplers
-   #:root-motion-p
+   #:kind
    #:velocity-scale
    #:loop-p
    #:next

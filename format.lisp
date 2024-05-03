@@ -141,7 +141,7 @@
 (define-element animation (named-element indexed-element)
   ((channels :initform #() :parse animation-channel)
    (samplers :initform #() :parse animation-sampler)
-   (root-motion-p :initform NIL :name ("extensions" "SHIRAKUMO_trial" "rootMotion"))
+   (kind :initform :default :name ("extensions" "SHIRAKUMO_trial" "type") :parse keyword)
    (velocity-scale :initform 1.0 :name ("extensions" "SHIRAKUMO_trial" "velocityScale"))
    (loop-p :initform T :name ("extensions" "SHIRAKUMO_trial" "loop"))
    (next :initform NIL :name ("extensions" "SHIRAKUMO_trial" "next"))
