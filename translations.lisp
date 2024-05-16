@@ -225,7 +225,7 @@
   value)
 
 (defmethod serialize-to ((type (eql 'json-pointer)) (value cons))
-  (format out "~{~a~^/~}"
+  (format nil "~{~a~^/~}"
           (loop for part in value
                 collect (etypecase part
                           (string part)
