@@ -293,6 +293,12 @@
 (define-element shirakumo-checkpoint (shirakumo-trigger-data)
   ((spawn-point :initform #(0.0 0.0 0.0))))
 
+(define-element shirakumo-progression (shirakumo-trigger-data)
+  ((state :initform "progression" :parse :keyword)
+   (value :initform 1.0)
+   (mode :initform :inc :parse :Keyword)
+   (condition :initform "T")))
+
 (define-element physics-material (indexed-element)
   ((static-friction :initform 0.6)
    (dynamic-friction :initform 0.6)

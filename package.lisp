@@ -1,5 +1,6 @@
 (defpackage #:org.shirakumo.fraf.gltf
   (:use #:cl)
+  (:shadow #:condition)
   (:local-nicknames
    (#:mmap #:org.shirakumo.fraf.trial.mmap)
    (#:sequences #:org.shirakumo.trivial-extensible-sequences))
@@ -253,6 +254,11 @@
    #:kill
    #:shirakumo-checkpoint
    #:spawn-point
+   #:shirakumo-progression
+   #:state
+   #:value
+   #:mode
+   #:condition
    #:physics-material
    #:static-friction
    #:dynamic-friction
