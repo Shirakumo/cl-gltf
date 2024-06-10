@@ -121,7 +121,7 @@
    (indices :initform NIL :ref accessors)
    (material :ref materials)
    (mode :initform :triangles :parse primitive-mode)
-   targets))
+   (targets :initform #() :parse mesh-attributes)))
 
 (define-element material (named-element indexed-element)
   ((pbr :parse pbr :name "pbrMetallicRoughness")
