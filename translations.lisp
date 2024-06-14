@@ -57,8 +57,13 @@
 (defmethod serialize-to (target (value null))
   value)
 
-(defun %parse-from (json type gltf)
-  (apply #'make-instance type :gltf gltf (initargs (c2mop:class-prototype (c2mop:ensure-finalized (find-class type))) json gltf)))
+(defun %parse-from (json type gltf &rest args)
+  (apply #'make-instance type :gltf gltf (append args (initargs (c2mop:class-prototype (c2mop:ensure-finalized (find-class type))) json gltf))))
+
+(defmethod parse-from (json (type accessor) gltf)
+  (if (gethash "sparse" json)
+      (%parse-from json 'sparse-accessor gltf)
+      (%parse-from json 'accessor gltf)))
 
 (defmethod parse-from (json (type light) gltf)
   (loop for (field type) in '(("directional" directional-light)

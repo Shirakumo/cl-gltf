@@ -218,7 +218,7 @@
   ((buffer-view :ref buffer-views)
    (byte-offset :initform 0)
    (component-type :name "componentType" :initform :float :parse element-type)
-   (element-type :name "type" :parse element-type)
+   (element-type :name "type" :initform :scalar :parse element-type)
    (size :name "count" :accessor size :reader sequences:length)
    (normalized :initform NIL)
    (maximum :name "max")
@@ -229,14 +229,21 @@
    (element-writer :name null :initarg :element-writer :accessor element-writer)))
 
 (defmethod initialize-instance :after ((accessor accessor) &key)
-  (when (buffer-view accessor)
-    (unless (slot-boundp accessor 'start)
-      (setf (slot-value accessor 'start) (cffi:inc-pointer (start (buffer-view accessor)) (byte-offset accessor))))
-    (unless (slot-boundp accessor 'byte-stride)
-      (setf (slot-value accessor 'byte-stride)
-            (or (byte-stride (buffer-view accessor))
-                (* (element-count (element-type accessor))
-                   (element-byte-stride (component-type accessor)))))))
+  (cond ((buffer-view accessor)
+         (unless (slot-boundp accessor 'start)
+           (setf (slot-value accessor 'start) (cffi:inc-pointer (start (buffer-view accessor)) (byte-offset accessor))))
+         (unless (slot-boundp accessor 'byte-stride)
+           (setf (slot-value accessor 'byte-stride)
+                 (or (byte-stride (buffer-view accessor))
+                     (* (element-count (element-type accessor))
+                        (element-byte-stride (component-type accessor)))))))
+        (T
+         (unless (slot-boundp accessor 'start)
+           (setf (slot-value accessor 'start) (cffi:null-pointer)))
+         (unless (slot-boundp accessor 'byte-stride)
+           (setf (slot-value accessor 'byte-stride)
+                 (* (element-count (element-type accessor))
+                    (element-byte-stride (component-type accessor)))))))
   (unless (slot-boundp accessor 'element-reader)
     (setf (slot-value accessor 'element-reader) (construct-element-reader (element-type accessor) (component-type accessor))))
   (unless (slot-boundp accessor 'element-writer)
@@ -248,8 +255,28 @@
 (defmethod (setf sequences:elt) (value (accessor accessor) i)
   (funcall (element-writer accessor) value (cffi:inc-pointer (start accessor) (* (byte-stride accessor) i))))
 
-(defclass sparse-accessor (accessor)
-  (index-count
-   index-start
-   index-byte-stride
-   index-reader))
+(define-element sparse-accessor (accessor)
+  ((sparse-size :name ("sparse" "count"))
+   (sparse-indices :name ("sparse" "indices"))
+   (sparse-values :name ("sparse" "values"))))
+
+(defmethod initialize-instance :after ((accessor sparse-accessor) &key)
+  (setf (sparse-indices accessor) (%parse-from (sparse-indices accessor) 'accessor (gltf accessor)))
+  (setf (sparse-values accessor) (%parse-from (sparse-values accessor) 'accessor (gltf accessor)
+                                              :component-type (component-type accessor)
+                                              :element-type (element-type accessor))))
+
+(defun find-sparse-index (accessor i end)
+  ())
+
+(defmethod sequences:elt ((accessor sparse-accessor) i)
+  (let ((sparse-i (find-sparse-index (sparse-indices accessor) i (sparse-size accessor))))
+    (if sparse-i
+        (sequences:elt (sparse-values accessor) sparse-i)
+        (funcall (element-reader accessor) (cffi:inc-pointer (start accessor) (* (byte-stride accessor) i))))))
+
+(defmethod (setf sequences:elt) (value (accessor sparse-accessor) i)
+  (let ((sparse-i (find-sparse-index (sparse-indices accessor) i (sparse-size accessor))))
+    (if sparse-i
+        (setf (sequences:elt (sparse-values accessor) sparse-i) value)
+        (funcall (element-writer accessor) value (cffi:inc-pointer (start accessor) (* (byte-stride accessor) i))))))
