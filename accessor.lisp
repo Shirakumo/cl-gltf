@@ -266,8 +266,26 @@
                                               :component-type (component-type accessor)
                                               :element-type (element-type accessor))))
 
-(defun find-sparse-index (accessor i end)
-  ())
+(defun find-sparse-index (accessor index end)
+  (declare (type (unsigned-byte 32) index end))
+  (declare (type sequences:sequence accessor))
+  (declare (optimize speed))
+  (cond ((= 0 end))
+        ((= 1 end)
+         (when (= index (the (unsigned-byte 32) (elt accessor 0))) 0))
+        (T
+         (labels ((recurse (start end)
+                    (declare (type (unsigned-byte 32) start end))
+                    (when (< start end)
+                      (let* ((i (+ start (truncate (- end start) 2)))
+                             (element (the (unsigned-byte 32) (elt accessor i))))
+                        (cond ((< index element)
+                               (recurse start i))
+                              ((< element index)
+                               (recurse (1+ i) end))
+                              (T
+                               i))))))
+           (recurse 0 end)))))
 
 (defmethod sequences:elt ((accessor sparse-accessor) i)
   (let ((sparse-i (find-sparse-index (sparse-indices accessor) i (sparse-size accessor))))
