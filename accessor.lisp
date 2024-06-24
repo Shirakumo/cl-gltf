@@ -214,6 +214,8 @@
 (defmethod (setf sequences:elt) (value (view buffer-view) i)
   (setf (cffi:mem-aref (start view) :uint8 (* i (or (byte-stride view) 1))) value))
 
+(defvar *null-array* NIL)
+
 (define-element accessor (indexed-element sequences:sequence named-element)
   ((buffer-view :ref buffer-views)
    (byte-offset :initform 0)
@@ -238,12 +240,16 @@
                      (* (element-count (element-type accessor))
                         (element-byte-stride (component-type accessor)))))))
         (T
-         (unless (slot-boundp accessor 'start)
-           (setf (slot-value accessor 'start) (cffi:null-pointer)))
-         (unless (slot-boundp accessor 'byte-stride)
-           (setf (slot-value accessor 'byte-stride)
-                 (* (element-count (element-type accessor))
-                    (element-byte-stride (component-type accessor)))))))
+         (cond ((slot-boundp accessor 'start)
+                (unless (slot-boundp accessor 'byte-stride)
+                  (setf (slot-value accessor 'byte-stride)
+                        (* (element-count (element-type accessor))
+                           (element-byte-stride (component-type accessor))))))
+               (T
+                (unless *null-array*
+                  (setf *null-array* (static-vectors:make-static-vector (* 8 4 4) :initial-element 0)))
+                (setf (slot-value accessor 'start) (static-vectors:static-vector-pointer *null-array*))
+                (setf (slot-value accessor 'byte-stride) 0)))))
   (unless (slot-boundp accessor 'element-reader)
     (setf (slot-value accessor 'element-reader) (construct-element-reader (element-type accessor) (component-type accessor))))
   (unless (slot-boundp accessor 'element-writer)
