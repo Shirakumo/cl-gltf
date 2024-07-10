@@ -142,6 +142,7 @@
    #:loop-p
    #:next
    #:blend-duration
+   #:effects
    #:animation-channel
    #:sampler
    #:target
@@ -241,6 +242,9 @@
    #:trigger
    #:shape
    #:collision-filter
+   #:shirakumo-effect
+   #:start
+   #:end
    #:shirakumo-trigger-data
    #:filter
    #:shirakumo-trigger
@@ -259,6 +263,10 @@
    #:value
    #:mode
    #:condition
+   #:shirakumo-camera
+   #:state
+   #:target
+   #:offset
    #:physics-material
    #:static-friction
    #:dynamic-friction

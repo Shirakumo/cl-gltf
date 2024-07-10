@@ -103,6 +103,8 @@
          (%parse-from (gethash "checkpoint" json) 'shirakumo-checkpoint gltf))
         ((gethash "progressionTrigger" json)
          (%parse-from (gethash "progressionTrigger" json) 'shirakumo-progression gltf))
+        ((gethash "cameraTrigger" json)
+         (%parse-from (gethash "cameraTrigger" json) 'shirakumo-camera gltf))
         (T
          (call-next-method))))
 

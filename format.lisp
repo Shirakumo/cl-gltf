@@ -145,7 +145,8 @@
    (velocity-scale :initform 1.0 :name ("extensions" "SHIRAKUMO_trial" "velocityScale"))
    (loop-p :initform T :name ("extensions" "SHIRAKUMO_trial" "loop"))
    (next :initform NIL :name ("extensions" "SHIRAKUMO_trial" "next"))
-   (blend-duration :initform 0.2 :name ("extensions" "SHIRAKUMO_trial" "blendDuration"))))
+   (blend-duration :initform 0.2 :name ("extensions" "SHIRAKUMO_trial" "blendDuration"))
+   (effects :initform #() :name ("extensions" "SHIRAKUMO_trial" "effects") :parse shirakumo-effect)))
 
 (define-element animation-channel (gltf-element)
   (sampler
@@ -275,6 +276,11 @@
   ((shape :ref shapes)
    (collision-filter :ref collision-filters)))
 
+(define-element shirakumo-effect ()
+  ((name :name "effect")
+   start
+   (end :initform NIL)))
+
 (define-element shirakumo-trigger-data (gltf-element)
   ((filter :initform "T")))
 
@@ -298,6 +304,11 @@
    (value :initform 1.0)
    (mode :initform :inc :parse :Keyword)
    (condition :initform "T")))
+
+(define-element shirakumo-camera (shirakumo-trigger-data)
+  ((state :parse :keyword)
+   target
+   offset))
 
 (define-element physics-material (indexed-element)
   ((static-friction :initform 0.6)
