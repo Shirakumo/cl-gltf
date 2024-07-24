@@ -276,7 +276,7 @@
   ((shape :ref shapes)
    (collision-filter :ref collision-filters)))
 
-(define-element shirakumo-effect ()
+(define-element shirakumo-effect (gltf-element)
   ((name :name "effect")
    start
    (end :initform NIL)))
