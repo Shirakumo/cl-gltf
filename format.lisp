@@ -255,7 +255,7 @@
   ((radius :initform 0.5 :name ("sphere" "radius"))))
 
 (define-element trimesh-shape (shape)
-  ((mesh :ref meshes :name ("trimesh" "mesh"))))
+  ((mesh :ref meshes :name ("mesh" "mesh"))))
 
 (define-element collider (gltf-element)
   ((shape :ref shapes)
