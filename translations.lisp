@@ -193,7 +193,7 @@
              json)
     table))
 
-(defmethod serialize-to ((type (eql 'mesh-attributes)) value)
+(defmethod serialize-to ((type (eql 'mesh-attributes)) (value hash-table))
   (let ((table (make-hash-table :test 'equal)))
     (maphash (lambda (k v)
                (setf (gethash (string k) table) (idx v)))
