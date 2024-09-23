@@ -98,7 +98,7 @@
    weights))
 
 (define-element camera (named-element indexed-element)
-  ((kind :parse :keyword :name "type")))
+  ((kind :parse keyword :name "type")))
 
 (define-element orthographic-camera (camera)
   ((xmag :name ("orthographic" "xmag"))
@@ -199,7 +199,7 @@
    (metallic-roughness :parse texture-info :name "metallicRoughnessTexture")))
 
 (define-element light (indexed-element named-element gltf-element)
-  ((kind :parse :keyword :name "type")
+  ((kind :parse keyword :name "type")
    (color :initform #(1.0 1.0 1.0))
    (intensity :initform 1.0)))
 
@@ -227,13 +227,13 @@
 
 (define-element articulation-stage (gltf-element)
   (name
-   (kind :parse :keyword :name "type")
+   (kind :parse keyword :name "type")
    minimum-value
    maximum-value
    initial-value))
 
 (define-element shape (indexed-element)
-  ((kind :parse :keyword :name "type")))
+  ((kind :parse keyword :name "type")))
 
 (define-element box-shape (shape)
   ((size :initform #(1.0 1.0 1.0) :name ("box" "size"))))
@@ -300,13 +300,13 @@
   ((spawn-point :initform #(0.0 0.0 0.0))))
 
 (define-element shirakumo-progression (shirakumo-trigger-data)
-  ((state :initform "progression" :parse :keyword)
+  ((state :initform :progression :parse keyword)
    (value :initform 1.0)
-   (mode :initform :inc :parse :Keyword)
+   (mode :initform :inc :parse keyword)
    (condition :initform "T")))
 
 (define-element shirakumo-camera (shirakumo-trigger-data)
-  ((state :parse :keyword)
+  ((state :initform :free :parse keyword)
    target
    offset))
 
@@ -314,8 +314,8 @@
   ((static-friction :initform 0.6)
    (dynamic-friction :initform 0.6)
    (restitution :initform 0.0)
-   (friction-combine :parse :keyword)
-   (restitution-combine :parse :keyword)))
+   (friction-combine :parse keyword)
+   (restitution-combine :parse keyword)))
 
 (define-element physics-joint (gltf-element)
   ((connected-node :ref nodes)
