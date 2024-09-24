@@ -180,10 +180,11 @@
     (T (string value))))
 
 (defmethod parse-from ((json string) (type (eql 'keyword)) gltf)
-  (intern (string-upcase json) "KEYWORD"))
+  (if (string-equal json "nil") NIL (intern (string-upcase json) "KEYWORD")))
 
 (defmethod serialize-to ((type (eql 'keyword)) value)
-  (string-downcase value))
+  (when value
+    (string-downcase value)))
 
 (defmethod parse-from (json (type (eql 'mesh-attributes)) gltf)
   (let ((table (make-hash-table :test 'eql)))
