@@ -216,7 +216,6 @@
    #:height
    #:radius-top
    #:radius-bottom
-   #:convex-shape
    #:mesh
    #:cylinder-shape
    #:height
@@ -224,7 +223,8 @@
    #:radius-bottom
    #:sphere-shape
    #:radius
-   #:trimesh-shape
+   #:mesh-shape
+   #:convex-p
    #:mesh
    #:collider
    #:shape

@@ -48,7 +48,7 @@
     (light 'lights)
     (image-light 'image-lights)
     (articulation 'articulations)
-    ((shape box-shape sphere-shape cylinder-shape capsule-shape trimesh-shape convex-shape) 'shapes)
+    ((shape box-shape sphere-shape cylinder-shape capsule-shape mesh-shape convex-shape) 'shapes)
     (physics-material 'physics-materials)
     (physics-joint-limit 'physics-joint-limits)
     (collision-filter 'collision-filters)))

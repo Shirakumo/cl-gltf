@@ -243,9 +243,6 @@
    (radius-top :initform 0.25 :name ("capsule" "radiusTop"))
    (radius-bottom :initform 0.25 :name ("capsule" "radiusBottom"))))
 
-(define-element convex-shape (shape)
-  ((mesh :ref meshes :name ("convex" "mesh"))))
-
 (define-element cylinder-shape (shape)
   ((height :initform 0.5 :name ("cylinder" "height"))
    (radius-top :initform 0.25 :name ("cylinder" "radiusTop"))
@@ -254,8 +251,9 @@
 (define-element sphere-shape (shape)
   ((radius :initform 0.5 :name ("sphere" "radius"))))
 
-(define-element trimesh-shape (shape)
-  ((mesh :ref meshes :name ("mesh" "mesh"))))
+(define-element mesh-shape (shape)
+  ((mesh :ref meshes :name ("mesh" "mesh"))
+   (convex-p :name ("extensions" "KHR_physics_rigid_bodies" "convexHull"))))
 
 (define-element collider (gltf-element)
   ((shape :ref shapes)
