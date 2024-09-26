@@ -253,7 +253,7 @@
 
 (define-element mesh-shape (shape)
   ((mesh :ref meshes :name ("mesh" "mesh"))
-   (convex-p :name ("extensions" "KHR_physics_rigid_bodies" "convexHull"))))
+   (convex-p :initform NIL :name ("extensions" "KHR_physics_rigid_bodies" "convexHull"))))
 
 (define-element collider (gltf-element)
   ((shape :ref shapes)
