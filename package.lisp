@@ -267,6 +267,10 @@
    #:state
    #:target
    #:offset
+   #:shirakumo-interactable
+   #:form
+   #:interaction
+   #:kind
    #:physics-material
    #:static-friction
    #:dynamic-friction

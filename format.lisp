@@ -89,6 +89,7 @@
    (shirakumo-trigger-data :initform NIL :parse shirakumo-trigger-data :name ("extensions" "SHIRAKUMO_trial"))
    (physics-joint :initform NIL :parse physics-joint :name ("extensions" "KHR_physics_rigid_bodies" "joint"))
    (virtual-p :initform NIL :name ("extensions" "SHIRAKUMO_trial" "virtual"))
+   (shirakumo-interactable :initform NIL :parse shirakumo-interactable :name ("extensions" "SHIRAKUMO_trial" "interactable"))
    (skin :ref* skins)
    (mesh :ref meshes)
    matrix
@@ -307,6 +308,11 @@
   ((state :initform :free :parse keyword)
    target
    offset))
+
+(define-element shirakumo-interactable (gltf-element)
+  (form
+   interaction
+   (kind :initform :inspectable :parse keyword)))
 
 (define-element physics-material (indexed-element)
   ((static-friction :initform 0.6)
