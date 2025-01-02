@@ -156,11 +156,18 @@
                (T (error "Unknown json-name ~s on ~a" json-name type))))
 
        (defmethod describe-object ((type ,name) stream)
-         (let ((*recursive-describe* T))
+         (let ((*recursive-describe* (typecase *recursive-describe*
+                                       (null 2)
+                                       (integer (1- *recursive-describe*))
+                                       (T *recursive-describe*))))
            (format stream "~va~a" (* 2 *describe-indent*) "" (type-of type))
            (if (typep type 'indexed-element)
-               (format stream " ~d" (idx type)))
+               (format stream " ~4d" (idx type)))
+           (if (typep type 'named-element)
+               (format stream " ~a" (name type)))
            (terpri stream)
-           ,@(loop for (name . args) in slots
-                   when (getf args :name)
-                   collect `(describe-slot ',name (slot-value type ',name) ,maxlength stream)))))))
+           (if (and (integerp *recursive-describe*) (< 0 *recursive-describe*))
+               (progn ,@(loop for (name . args) in slots
+                              when (getf args :name)
+                              collect `(describe-slot ',name (slot-value type ',name) ,maxlength stream)))
+               (format stream "~va  ...~%" (* 2 *describe-indent*) "")))))))
