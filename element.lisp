@@ -48,6 +48,7 @@
                          (when accessor `(:accessor ,accessor)))
                  `(:accessor ,slot)))))
 
+(defvar *recursive-describe* NIL)
 (defvar *describe-indent* 0)
 
 (defun describe-slot (name value maxlength stream)
@@ -155,10 +156,11 @@
                (T (error "Unknown json-name ~s on ~a" json-name type))))
 
        (defmethod describe-object ((type ,name) stream)
-         (format stream "~va~a" (* 2 *describe-indent*) "" (type-of type))
-         (if (typep type 'indexed-element)
-             (format stream " ~d" (idx type)))
-         (terpri stream)
-         ,@(loop for (name . args) in slots
-                 when (getf args :name)
-                 collect `(describe-slot ',name (slot-value type ',name) ,maxlength stream))))))
+         (let ((*recursive-describe* T))
+           (format stream "~va~a" (* 2 *describe-indent*) "" (type-of type))
+           (if (typep type 'indexed-element)
+               (format stream " ~d" (idx type)))
+           (terpri stream)
+           ,@(loop for (name . args) in slots
+                   when (getf args :name)
+                   collect `(describe-slot ',name (slot-value type ',name) ,maxlength stream)))))))

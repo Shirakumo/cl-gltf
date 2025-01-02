@@ -256,11 +256,12 @@
     (setf (slot-value accessor 'element-writer) (construct-element-writer (element-type accessor) (component-type accessor)))))
 
 (defmethod describe-object :after ((accessor accessor) stream)
-  (format stream "~&~%Elements:")
-  (let ((i 0))
-    (sequences:dosequence (e accessor)
-      (format stream "~% ~3d: ~a" i e)
-      (incf i))))
+  (unless *recursive-describe*
+    (format stream "~&~%Elements:")
+    (let ((i 0))
+      (sequences:dosequence (e accessor)
+        (format stream "~% ~3d: ~a" i e)
+        (incf i)))))
 
 (defmethod sequences:elt ((accessor accessor) i)
   (funcall (element-reader accessor) (cffi:inc-pointer (start accessor) (* (byte-stride accessor) i))))
