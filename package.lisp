@@ -242,6 +242,10 @@
    #:trigger
    #:shape
    #:collision-filter
+   #:shirakumo-envmap
+   #:file
+   #:orientation
+   #:color
    #:shirakumo-effect
    #:start
    #:end

@@ -73,7 +73,7 @@
 (define-element scene (named-element indexed-element)
   ((nodes :initform #() :ref nodes)
    (light :initform NIL :ref image-lights :name ("extensions" "EXT_lights_image_based" "light"))
-   (envmap :initform NIL :name ("extensions" "SHIRAKUMO_trial" "envmap"))))
+   (envmap :initform NIL :parse shirakumo-envmap :name ("extensions" "SHIRAKUMO_trial" "envmap"))))
 
 (define-element node (named-element indexed-element)
   ((camera :ref cameras)
@@ -274,6 +274,11 @@
 (define-element trigger (gltf-element)
   ((shape :ref shapes)
    (collision-filter :ref collision-filters)))
+
+(define-element shirakumo-envmap (gltf-element)
+  (file
+   (orientation :initform #(0.0 0.0 0.0))
+   (color :initform #(1.0 1.0 1.0))))
 
 (define-element shirakumo-effect (gltf-element)
   ((name :name "effect")
