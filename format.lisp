@@ -38,6 +38,7 @@
    (textures :initform #() :parse texture)
    (materials :initform #() :parse material)
    (skins :initform #() :parse skin)
+   (shapes :initform #() :parse shape :name ("extensions" "KHR_implicit_shapes" "shapes"))
    (nodes :initform #() :parse node)
    (animations :initform #() :parse animation)
    (scenes :initform #() :parse scene)
@@ -47,7 +48,6 @@
    (lights :initform #() :parse light :name ("extensions" "KHR_lights_punctual" "lights"))
    (image-lights :initform #() :parse image-light :name ("extensions" "EXT_lights_image_based"))
    (articulations :initform #() :parse articulation :name ("extensions" "AGI_articulations"))
-   (shapes :initform #() :parse shape :name ("extensions" "KHR_collision_shapes" "shapes"))
    (physics-materials :initform #() :parse physics-material :name ("extensions" "KHR_physics_rigid_bodies" "physicsMaterials"))
    (physics-joint-limits :initform #() :parse physics-joint-limit :name ("extensions" "KHR_physics_rigid_bodies" "physicsJointLimits"))
    (collision-filters :initform #() :parse collision-filter :name ("extensions" "KHR_physics_rigid_bodies" "collisionFilters"))
@@ -252,14 +252,15 @@
 (define-element sphere-shape (shape)
   ((radius :initform 0.5 :name ("sphere" "radius"))))
 
-(define-element mesh-shape (shape)
-  ((mesh :ref meshes :name ("mesh" "mesh"))
-   (convex-p :initform NIL :name ("extensions" "KHR_physics_rigid_bodies" "convexHull"))))
-
 (define-element collider (gltf-element)
-  ((shape :ref shapes)
+  ((geometry :parse collider-geometry)
    (physics-material :ref physics-materials)
    (collision-filter :ref collision-filters)))
+
+(define-element collider-geometry (gltf-element)
+  ((shape :ref shapes)
+   (node :ref* nodes)
+   (convex-p :initform NIL :name "convexHull")))
 
 (define-element rigidbody (gltf-element)
   ((kinematic-p :name "isKinematic")
@@ -272,7 +273,7 @@
    (gravity-factor :initform 1.0)))
 
 (define-element trigger (gltf-element)
-  ((shape :ref shapes)
+  ((geometry :parse collider-geometry)
    (collision-filter :ref collision-filters)))
 
 (define-element shirakumo-envmap (gltf-element)

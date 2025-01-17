@@ -223,11 +223,12 @@
    #:radius-bottom
    #:sphere-shape
    #:radius
-   #:mesh-shape
-   #:convex-p
    #:mesh
    #:collider
+   #:geometry
    #:shape
+   #:node
+   #:convex-p
    #:physics-material
    #:collision-filter
    #:rigidbody
