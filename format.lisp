@@ -122,7 +122,8 @@
    (indices :initform NIL :ref accessors)
    (material :ref materials)
    (mode :initform :triangles :parse primitive-mode)
-   (targets :initform #() :parse mesh-attributes)))
+   (targets :initform #() :parse mesh-attributes)
+   (matrix :name ("extensions" "SHIRAKUMO_trial" "matrix"))))
 
 (define-element material (named-element indexed-element)
   ((pbr :parse pbr :name "pbrMetallicRoughness")
