@@ -18,6 +18,7 @@
                (:file "printer")
                (:file "documentation"))
   :depends-on (:documentation-utils
+               :pathname-utils
                :trivial-extensible-sequences
                :mmap
                :com.inuoe.jzon

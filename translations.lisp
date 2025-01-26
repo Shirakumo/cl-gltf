@@ -52,7 +52,7 @@
   (to-table value NIL))
 
 (defmethod serialize-to (target (value pathname))
-  (uiop:native-namestring value))
+  (pathname-utils:native-namestring value))
 
 (defmethod serialize-to (target (value null))
   value)
