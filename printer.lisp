@@ -2,7 +2,8 @@
 
 (defun update-asset-generator (gltf)
   (setf (generator (asset gltf))
-        (format NIL "cl-gltf v~a" #.(asdf:component-version (asdf:find-system :cl-gltf)))))
+        (format NIL "cl-gltf v~a" #.(progn #+asdf (asdf:component-version (asdf:find-system :cl-gltf))
+                                           #-asdf "2.0"))))
 
 (defun merge-buffers (gltf)
   (when (< 1 (length (buffers gltf)))
