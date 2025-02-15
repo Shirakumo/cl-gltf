@@ -51,7 +51,7 @@
                       (setf (aref children i) child))
              (when (skin node)
                (setf (skin node) (resolve (skin node) 'skins gltf)))
-             (when (and (collider node) (node (geometry (collider node))))
+             (when (and (collider node) (geometry (collider node)) (node (geometry (collider node))))
                (setf (node (geometry (collider node))) (resolve (node (geometry (collider node))) 'nodes gltf))))
     type))
 
