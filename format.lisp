@@ -115,6 +115,7 @@
 
 (define-element mesh (named-element indexed-element)
   ((primitives :initform #() :parse mesh-primitive)
+   (target-names :initform #() :name ("extras" "targetNames"))
    weights))
 
 (define-element mesh-primitive (gltf-element)

@@ -116,6 +116,7 @@
    #:mesh
    #:primitives
    #:weights
+   #:target-names
    #:mesh-primitive
    #:attributes
    #:indices
