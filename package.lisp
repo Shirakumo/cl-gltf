@@ -259,6 +259,7 @@
    #:spawn
    #:spawn-count
    #:auto-deactivate-p
+   #:snap-to-surface-p
    #:respawn-cooldown
    #:shirakumo-killvolume
    #:kill

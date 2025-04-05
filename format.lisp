@@ -298,6 +298,7 @@
   ((spawn)
    (spawn-count :initform 1)
    (auto-deactivate-p :initform T :name "autoDeactivate")
+   (snap-to-surface-p :initform T :name "snapToSurface")
    (respawn-cooldown :initform 0.0)))
 
 (define-element shirakumo-killvolume (shirakumo-trigger-data)
