@@ -99,6 +99,7 @@
    #:physics-materials
    #:physics-joint-limits
    #:collision-filters
+   #:material-variants
    #:matrix
    #:rotation
    #:scale
@@ -305,7 +306,10 @@
    #:collision-filter
    #:collision-systems
    #:collide-with-systems
-   #:not-collide-with-systems)
+   #:not-collide-with-systems
+   #:material-variant
+   #:material-variant-mapping
+   #:variants)
   ;; parser.lisp
   (:export
    #:parse

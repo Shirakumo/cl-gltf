@@ -51,6 +51,7 @@
    (physics-materials :initform #() :parse physics-material :name ("extensions" "KHR_physics_rigid_bodies" "physicsMaterials"))
    (physics-joint-limits :initform #() :parse physics-joint-limit :name ("extensions" "KHR_physics_rigid_bodies" "physicsJointLimits"))
    (collision-filters :initform #() :parse collision-filter :name ("extensions" "KHR_physics_rigid_bodies" "collisionFilters"))
+   (material-variants :initform #() :parse material-variant :name ("extensions" "KHR_materials_variants" "variants"))
    (%mmap :initarg :%mmap :name null :accessor %mmap :initform NIL)))
 
 (defmethod initialize-instance :after ((gltf gltf) &key)
@@ -127,7 +128,8 @@
    (material :ref materials)
    (mode :initform :triangles :parse primitive-mode)
    (targets :initform #() :parse mesh-attributes)
-   (matrix :name ("extensions" "SHIRAKUMO_trial" "matrix"))))
+   (matrix :name ("extensions" "SHIRAKUMO_trial" "matrix"))
+   (material-variants :parse material-variant-mapping :name ("extensions" "KHR_materials_variants" "mappings"))))
 
 (define-element material (named-element indexed-element)
   ((pbr :parse pbr :name "pbrMetallicRoughness")
@@ -355,3 +357,9 @@
   (collision-systems
    not-collide-with-systems
    collide-with-systems))
+
+(define-element material-variant (named-element indexed-element))
+
+(define-element material-variant-mapping (named-element)
+  ((material :ref materials)
+   (variants :ref material-variants)))
