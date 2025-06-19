@@ -135,6 +135,7 @@
    (occlusion-texture :parse texture-info)
    (emissive-texture :parse texture-info)
    (emissive-factor :initform #(0.0 0.0 0.0))
+   (emissive-strength :initform 1.0 :name ("extensions" "KHR_materials_emissive_strength" "emissiveStrength"))
    (alpha-mode :initform :opaque :parse keyword)
    (alpha-cutoff :initform 0.5)
    (double-sided-p :initform NIL :name "doubleSided")

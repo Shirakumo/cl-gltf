@@ -131,6 +131,7 @@
    #:occlusion-texture
    #:emissive-texture
    #:emissive-factor
+   #:emissive-strength
    #:alpha-mode
    #:alpha-cutoff
    #:double-sided-p

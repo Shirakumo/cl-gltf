@@ -25,6 +25,7 @@ The following official extension specs are explicitly supported:
 - EXT_mesh_gpu_instancing
 - KHR_animation_pointer
 - KHR_lights_punctual
+- KHR_materials_emissive_strength
 - KHR_collision_shapes
 - KHR_rigid_bodies
 - KHR_texture_transform
