@@ -283,6 +283,9 @@
    #:physics-material
    #:static-friction
    #:dynamic-friction
+   #:angular-damping
+   #:linear-damping
+   #:deactivated-p
    #:restitution
    #:friction-combine
    #:restitution-combine
