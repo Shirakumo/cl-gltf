@@ -24,12 +24,12 @@ The following official extension specs are explicitly supported:
 - EXT_lights_image_based
 - EXT_mesh_gpu_instancing
 - KHR_animation_pointer
-- KHR_collision_shapes
+- KHR_implicit_shapes
 - KHR_lights_punctual
 - KHR_materials_emissive_strength
 - KHR_materials_unlit
 - KHR_materials_variants
-- KHR_rigid_bodies
+- KHR_physics_rigid_bodies
 - KHR_texture_transform
 - MSFT_lod
 - MSFT_packing_occlusionRoughnessMetallic
