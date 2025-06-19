@@ -94,6 +94,7 @@
    (shirakumo-interactable :initform NIL :parse shirakumo-interactable :name ("extensions" "SHIRAKUMO_trial" "interactable"))
    (skin :ref* skins)
    (mesh :ref meshes)
+   (instancing :initform NIL :parse gpu-instancing :name ("extensions" "EXT_mesh_gpu_instancing"))
    matrix
    rotation
    scale

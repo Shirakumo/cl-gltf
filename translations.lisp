@@ -243,3 +243,22 @@
 
 (defmethod serialize-to ((type (eql 'json-pointer)) (value gltf-element))
   value)
+
+(defmethod parse-from (json (type (eql 'gpu-instancing)) gltf)
+  (let ((tab (make-hash-table :test 'equal)))
+    (loop for k being the hash-keys of json using (hash-value v)
+          for key = (cond ((string= k "TRANSLATION") :translation)
+                          ((string= k "ROTATION") :rotation)
+                          ((string= k "SCALE") :scale)
+                          (T k))
+          do (setf (gethash key tab) (resolve v 'accessors gltf)))
+    tab))
+
+(defmethod serialize-to ((type (eql 'gpu-instancing)) value)
+  (let ((tab (make-hash-table :test 'equal)))
+    (loop for k being the hash-keys of value using (hash-value v)
+          for key = (etypecase k
+                      (string k)
+                      (symbol (string-downcase k)))
+          do (setf (gethash key tab) (unresolve v)))
+    tab))

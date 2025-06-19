@@ -487,6 +487,17 @@ See NODE")
 See MESH
 See NODE")
 
+  (function instancing
+    "Accesses the GPU instancing accessors for the node.
+
+Each entry in the table is an identifier of the attribute to instance,
+and the associated accessor to pull the data for attribute from. Every
+accessor in the table must have the same count. Only the keys
+:TRANSLATION, :ROTATION, :SCALE are standardised, all other attributes
+are provided as strings.
+
+See NODE")
+
   (function matrix
     "Accesses the transformation matrix attached to the node.
 
