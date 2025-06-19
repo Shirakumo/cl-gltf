@@ -131,6 +131,7 @@
 
 (define-element material (named-element indexed-element)
   ((pbr :parse pbr :name "pbrMetallicRoughness")
+   (unlit-p :initform NIL :parse present :name ("extensions" "KHR_materials_unlit"))
    (normal-texture :parse texture-info)
    (occlusion-texture :parse texture-info)
    (emissive-texture :parse texture-info)

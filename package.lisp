@@ -127,6 +127,7 @@
    #:targets
    #:material
    #:pbr
+   #:unlit-p
    #:normal-texture
    #:occlusion-texture
    #:emissive-texture
