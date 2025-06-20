@@ -358,7 +358,8 @@
    not-collide-with-systems
    collide-with-systems))
 
-(define-element material-variant (named-element indexed-element))
+(define-element material-variant (named-element indexed-element)
+  ())
 
 (define-element material-variant-mapping (named-element)
   ((material :ref materials)

@@ -186,7 +186,7 @@
 (defmethod parse-from (json (type (eql 'present)) gltf)
   (not (null json)))
 
-(defmethod serialize-to (json (type (eql 'present)) value)
+(defmethod serialize-to ((type (eql 'present)) value)
   (when value (make-hash-table)))
 
 (defmethod parse-from (json (type (eql 'mesh-attributes)) gltf)
