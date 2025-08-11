@@ -4,9 +4,9 @@
   :author "Yukari Hafner <shinmera@tymoon.eu>"
   :maintainer "Yukari Hafner <shinmera@tymoon.eu>"
   :description "A library to parse and serialize the glTF file format."
-  :homepage "https://shirakumo.github.io/cl-gltf/"
-  :bug-tracker "https://github.com/shirakumo/cl-gltf/issues"
-  :source-control (:git "https://github.com/shirakumo/cl-gltf.git")
+  :homepage "https://shirakumo.org/docs/cl-gltf/"
+  :bug-tracker "https://shirakumo.org/project/cl-gltf/issues"
+  :source-control (:git "https://shirakumo.org/project/cl-gltf.git")
   :serial T
   :components ((:file "package")
                (:file "element")
