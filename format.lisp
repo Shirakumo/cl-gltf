@@ -74,7 +74,8 @@
 (define-element scene (named-element indexed-element)
   ((nodes :initform #() :ref nodes)
    (light :initform NIL :ref image-lights :name ("extensions" "EXT_lights_image_based" "light"))
-   (envmap :initform NIL :parse shirakumo-envmap :name ("extensions" "SHIRAKUMO_trial" "envmap"))))
+   (envmap :initform NIL :parse shirakumo-envmap :name ("extensions" "SHIRAKUMO_trial" "envmap"))
+   (metadata :initform NIL :name ("extensions" "SHIRAKUMO_trial" "metadata"))))
 
 (define-element node (named-element indexed-element)
   ((camera :ref cameras)

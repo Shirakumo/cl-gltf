@@ -76,6 +76,7 @@
    #:nodes
    #:light
    #:envmap
+   #:metadata
    #:node
    #:lods
    #:lod-screen-coverage
